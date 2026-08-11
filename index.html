@@ -175,7 +175,38 @@
       *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
     }
 
+  
+    /* ===== v1.1 Web Push ===== */
+    .push-card{overflow:hidden}
+    .push-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+    .push-title{display:flex;align-items:center;gap:9px}
+    .push-icon{
+      width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+      background:var(--soft);color:var(--primary);font-size:18px;flex:0 0 auto
+    }
+    .push-status{margin-top:4px;font-size:11px;line-height:1.45;color:var(--muted)}
+    .push-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .push-main-btn{
+      border:0;border-radius:12px;background:var(--primary);color:white;
+      padding:10px 14px;font-weight:800;cursor:pointer
+    }
+    .push-main-btn.secondary{background:var(--soft);color:var(--primary)}
+    .push-main-btn:disabled{opacity:.55;cursor:not-allowed}
+    html[data-theme="dark"] .push-main-btn{color:#102019}
+    html[data-theme="dark"] .push-main-btn.secondary{color:var(--primary)}
+    .push-help{
+      margin-top:12px;padding:11px 12px;border-radius:12px;background:var(--soft);
+      color:var(--muted);font-size:11px;line-height:1.55
+    }
+    .push-dot{
+      width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;
+      background:#a4afa9
+    }
+    .push-dot.on{background:#2ea66b}
+    .push-dot.off{background:#c76b6b}
+
   </style>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 </head>
 <body>
 
@@ -322,12 +353,32 @@
           <span>✅</span>
         </div>
       </div>
-      <div class="card">
-        <strong data-i18n="notifications">Notifikasi</strong>
-        <p class="small muted" style="line-height:1.6;margin-bottom:0">Versi PWA ini belum menggunakan scheduled local notification seperti Android. Kita kekalkan bahagian ini OFF supaya app stabil; web push boleh ditambah kemudian.</p>
+      <div class="card push-card">
+        <div class="push-head">
+          <div class="push-title">
+            <div class="push-icon">🔔</div>
+            <div>
+              <strong data-i18n="notifications">Notifikasi</strong>
+              <div class="push-status" id="pushStatus">
+                <span class="push-dot" id="pushDot"></span>
+                <span id="pushStatusText">Memeriksa sokongan notifikasi...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="push-actions">
+          <button class="push-main-btn" id="pushToggleBtn" onclick="togglePushNotifications()" disabled>
+            Aktifkan Notifikasi
+          </button>
+        </div>
+
+        <div class="push-help" id="pushHelp">
+          iPhone/iPad: ReminderMuslim perlu ditambah ke Home Screen dahulu. Kemudian buka app daripada ikon Home Screen dan tekan “Aktifkan Notifikasi”.
+        </div>
       </div>
       <div class="disclaimer">Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.</div>
-      <div class="version-note">ReminderMuslim PWA • v1.0</div>
+      <div class="version-note">ReminderMuslim PWA • v1.1</div>
     </div>
   </section>
 
@@ -357,7 +408,7 @@ const I18N = {
     favShort:"Kegemaran", settings:"Tetapan", nextQuote:"Ayat / Quote Seterusnya",
     nextPrayer:"Solat seterusnya", yourLocation:"Lokasi anda", useLocation:"Guna lokasi saya",
     language:"Bahasa", textSize:"Saiz teks", savedLocation:"Lokasi waktu solat", change:"Tukar",
-    offline:"Mod Offline", notifications:"Notifikasi", darkMode:"Mod Gelap", darkDesc:"Paparan lebih selesa pada waktu malam."
+    offline:"Mod Offline", notifications:"Notifikasi", darkMode:"Mod Gelap", darkDesc:"Paparan lebih selesa pada waktu malam.", pushEnable:"Aktifkan Notifikasi", pushDisable:"Matikan Notifikasi"
   },
   EN: {
     home:"Home", categories:"Categories", categoriesShort:"Categories", prayerTimes:"Prayer Times",
@@ -365,7 +416,7 @@ const I18N = {
     favShort:"Favorites", settings:"Settings", nextQuote:"Next Verse / Quote",
     nextPrayer:"Next prayer", yourLocation:"Your location", useLocation:"Use my location",
     language:"Language", textSize:"Text size", savedLocation:"Prayer location", change:"Change",
-    offline:"Offline Mode", notifications:"Notifications", darkMode:"Dark Mode", darkDesc:"A more comfortable display at night."
+    offline:"Offline Mode", notifications:"Notifications", darkMode:"Dark Mode", darkDesc:"A more comfortable display at night.", pushEnable:"Enable Notifications", pushDisable:"Disable Notifications"
   }
 };
 
@@ -381,6 +432,12 @@ let tasbihCount = Number(localStorage.getItem("tasbihCount") || 0);
 let prayerCache = JSON.parse(localStorage.getItem("prayerCacheV4") || "null");
 let nextPrayerAt = null;
 let countdownTimer = null;
+
+let oneSignalSDK = null;
+let oneSignalReady = false;
+let oneSignalInitError = null;
+const ONESIGNAL_APP_ID = "bffa2e41-6354-450b-9a00-02f87b783fcd";
+
 
 function esc(v){
   return String(v ?? "")
@@ -717,6 +774,7 @@ function updateSettings(){
   document.getElementById("prayerAddress").value=address;
   document.getElementById("settingsLang").textContent=language;
   applyTheme();
+  setTimeout(updatePushUI,0);
 }
 
 /* Toast */
@@ -725,6 +783,172 @@ function toast(text){
   const el=document.getElementById("toast");el.textContent=text;el.classList.add("show");
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),1400);
 }
+
+
+/* OneSignal Web Push */
+function isIOSDevice(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+function isStandalonePWA(){
+  return window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+}
+function setPushUI(text, state="idle", buttonText=null, disabled=false){
+  const textEl=document.getElementById("pushStatusText");
+  const dot=document.getElementById("pushDot");
+  const btn=document.getElementById("pushToggleBtn");
+  if(textEl) textEl.textContent=text;
+  if(dot){
+    dot.classList.remove("on","off");
+    if(state==="on") dot.classList.add("on");
+    if(state==="off") dot.classList.add("off");
+  }
+  if(btn){
+    if(buttonText) btn.textContent=buttonText;
+    btn.disabled=disabled;
+  }
+}
+async function updatePushUI(){
+  const btn=document.getElementById("pushToggleBtn");
+  const help=document.getElementById("pushHelp");
+  if(!btn) return;
+
+  if(!window.isSecureContext){
+    setPushUI(
+      language==="MS" ? "Notifikasi memerlukan sambungan HTTPS." : "Notifications require HTTPS.",
+      "off", tr("pushEnable"), true
+    );
+    return;
+  }
+
+  if(isIOSDevice() && !isStandalonePWA()){
+    setPushUI(
+      language==="MS"
+        ? "Tambah ReminderMuslim ke Home Screen dahulu."
+        : "Add ReminderMuslim to your Home Screen first.",
+      "off", tr("pushEnable"), true
+    );
+    if(help){
+      help.textContent = language==="MS"
+        ? "Safari → Share → Add to Home Screen → buka ReminderMuslim daripada ikon Home Screen."
+        : "Safari → Share → Add to Home Screen → open ReminderMuslim from the Home Screen icon.";
+    }
+    return;
+  }
+
+  if(!oneSignalReady || !oneSignalSDK){
+    setPushUI(
+      oneSignalInitError
+        ? (language==="MS" ? "OneSignal belum dapat disambungkan." : "OneSignal could not connect.")
+        : (language==="MS" ? "Menyediakan notifikasi..." : "Preparing notifications..."),
+      oneSignalInitError ? "off" : "idle",
+      tr("pushEnable"),
+      true
+    );
+    return;
+  }
+
+  const supported = oneSignalSDK.Notifications.isPushSupported();
+  if(!supported){
+    setPushUI(
+      language==="MS" ? "Peranti/browser ini tidak menyokong Web Push." : "This device/browser does not support Web Push.",
+      "off", tr("pushEnable"), true
+    );
+    return;
+  }
+
+  const permission = oneSignalSDK.Notifications.permission;
+  const optedIn = oneSignalSDK.User.PushSubscription.optedIn;
+
+  if(permission && optedIn){
+    setPushUI(
+      language==="MS" ? "Aktif — ReminderMuslim boleh menerima push." : "Active — ReminderMuslim can receive push notifications.",
+      "on", tr("pushDisable"), false
+    );
+  }else if(typeof Notification !== "undefined" && Notification.permission === "denied"){
+    setPushUI(
+      language==="MS"
+        ? "Permission disekat. Benarkan Notifications dalam Settings peranti/browser."
+        : "Permission is blocked. Allow Notifications in your device/browser settings.",
+      "off", tr("pushEnable"), true
+    );
+  }else{
+    setPushUI(
+      language==="MS" ? "Belum aktif." : "Not enabled yet.",
+      "off", tr("pushEnable"), false
+    );
+  }
+}
+
+async function togglePushNotifications(){
+  if(!oneSignalReady || !oneSignalSDK){
+    toast(language==="MS" ? "OneSignal belum bersedia." : "OneSignal is not ready yet.");
+    return;
+  }
+
+  try{
+    const supported = oneSignalSDK.Notifications.isPushSupported();
+    if(!supported){
+      toast(language==="MS" ? "Web Push tidak disokong." : "Web Push is not supported.");
+      return;
+    }
+
+    const optedIn = oneSignalSDK.User.PushSubscription.optedIn;
+
+    if(optedIn){
+      await oneSignalSDK.User.PushSubscription.optOut();
+      toast(language==="MS" ? "Notifikasi dimatikan." : "Notifications disabled.");
+      await updatePushUI();
+      return;
+    }
+
+    if(!oneSignalSDK.Notifications.permission){
+      await oneSignalSDK.Notifications.requestPermission();
+    }
+
+    if(oneSignalSDK.Notifications.permission){
+      await oneSignalSDK.User.PushSubscription.optIn();
+      toast(language==="MS" ? "Notifikasi diaktifkan." : "Notifications enabled.");
+    }
+
+    await updatePushUI();
+  }catch(error){
+    console.error("Push toggle error:", error);
+    toast(language==="MS" ? "Notifikasi gagal diaktifkan." : "Could not enable notifications.");
+    await updatePushUI();
+  }
+}
+
+function initOneSignal(){
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+
+  window.OneSignalDeferred.push(async function(OneSignal){
+    try{
+      await OneSignal.init({
+        appId: ONESIGNAL_APP_ID,
+        serviceWorkerPath: "ReminderMuslimWeb/push/onesignal/OneSignalSDKWorker.js",
+        serviceWorkerParam: {
+          scope: "/ReminderMuslimWeb/push/onesignal/"
+        },
+        autoResubscribe: true
+      });
+
+      oneSignalSDK = OneSignal;
+      oneSignalReady = true;
+
+      OneSignal.Notifications.addEventListener("permissionChange", updatePushUI);
+      OneSignal.User.PushSubscription.addEventListener("change", updatePushUI);
+
+      await updatePushUI();
+    }catch(error){
+      oneSignalInitError = error;
+      console.error("OneSignal init error:", error);
+      await updatePushUI();
+    }
+  });
+}
+
 
 /* Service worker */
 function registerServiceWorker(){
@@ -755,6 +979,7 @@ function start(){
   renderPrayerListFromCache();
   updateMiniPrayer();
   registerServiceWorker();
+  initOneSignal();
   finishSplash();
 
   if(!prayerCache && navigator.onLine) loadPrayerByLocation(true);

@@ -1,5 +1,5 @@
 
-const CACHE_NAME = "remindermuslim-v6";
+const CACHE_NAME = "remindermuslim-v7";
 const APP_FILES = [
   "./",
   "./index.html",
