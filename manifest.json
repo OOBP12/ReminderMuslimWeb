@@ -1,10 +1,20 @@
 {
   "name": "ReminderMuslim",
   "short_name": "ReminderMuslim",
-  "description": "Al-Quran, Zikir dan peringatan harian.",
+  "description": "Al-Quran, Zikir, Tasbih dan peringatan harian.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f6f5",
-  "theme_color": "#ffffff",
-  "lang": "ms"
+  "orientation": "portrait",
+  "background_color": "#f4f7f5",
+  "theme_color": "#f4f7f5",
+  "lang": "ms",
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "184x184",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
