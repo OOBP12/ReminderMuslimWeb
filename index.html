@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>ReminderMuslim</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ReminderMuslim">
+  
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f5;
+      color: #202020;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .app {
+      max-width: 650px;
+      margin: auto;
+      min-height: 100vh;
+      background: #f4f6f5;
+    }
+
+    /* TOP BAR */
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 18px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .text-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .text-controls button {
+      border: none;
+      background: #eef1ef;
+      padding: 8px 11px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* QUOTE */
+
+    .quote-box {
+      margin: 16px;
+      padding: 18px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .quote {
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .prayer {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* TABS */
+
+    .tabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 7px;
+      padding: 0 16px 14px;
+    }
+
+    .tab {
+      border: none;
+      background: #e7ebe9;
+      padding: 10px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background: #202622;
+      color: white;
+    }
+
+    /* CONTENT */
+
+    .content {
+      padding: 0 16px 30px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      padding: 18px;
+      margin-bottom: 12px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .arabic {
+      direction: rtl;
+      text-align: right;
+      font-size: 27px;
+      line-height: 2;
+      margin: 15px 0;
+    }
+
+    .meaning {
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* TASBIH */
+
+    .tasbih-area {
+      text-align: center;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+    }
+
+    .tasbih-title {
+      margin-top: 0;
+    }
+
+    .counter {
+      font-size: 70px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .target {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .tap-button {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      border: none;
+      background: #202622;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 7px 20px rgba(0,0,0,0.18);
+    }
+
+    .tap-button:active {
+      transform: scale(0.97);
+    }
+
+    .reset {
+      margin-top: 22px;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: #eceeed;
+      cursor: pointer;
+    }
+
+    .complete {
+      min-height: 24px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      color: #777;
+      line-height: 1.5;
+      padding: 14px;
+      margin-top: 14px;
+      background: #ecefed;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+
+  <div class="topbar">
+
+    <h1>Al-Quran & Zikir</h1>
+
+    <div class="text-controls">
+      <button onclick="changeText(-1)">A−</button>
+      <button onclick="changeText(1)">A+</button>
+    </div>
+
+  </div>
+
+  <!-- QUOTE -->
+
+  <div class="quote-box">
+
+    <p class="quote">
+      “Sesungguhnya dengan mengingati Allah, hati menjadi tenteram.”
+    </p>
+
+    <div class="prayer">
+      🕌 Waktu solat seterusnya akan dipaparkan di sini.
+    </div>
+
+  </div>
+
+  <!-- TAB -->
+
+  <div class="tabs">
+
+    <button
+      class="tab active"
+      onclick="openTab('surah', this)">
+      Surah
+    </button>
+
+    <button
+      class="tab"
+      onclick="openTab('pagi', this)">
+      Zikir Pagi
+    </button>
+
+    <button
+      class="tab"
+      onclick="openTab('petang', this)">
+      Zikir Petang
+    </button>
+
+    <button
+      class="tab"
+      onclick="openTab('tasbih', this)">
+      Tasbih
+    </button>
+
+  </div>
+
+  <!-- CONTENT -->
+
+  <div class="content" id="textContent">
+
+    <!-- SURAH -->
+
+    <div id="surah" class="panel active">
+
+      <div class="card">
+
+        <h3>Al-Fatihah</h3>
+
+        <div class="arabic">
+          بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+        </div>
+
+        <div class="meaning">
+          Dengan nama Allah Yang Maha Pemurah lagi Maha Penyayang.
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <h3>Al-Ikhlas</h3>
+
+        <div class="arabic">
+          قُلْ هُوَ اللَّهُ أَحَدٌ
+        </div>
+
+        <div class="meaning">
+          Katakanlah: Dialah Allah Yang Maha Esa.
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ZIKIR PAGI -->
+
+    <div id="pagi" class="panel">
+
+      <div class="card">
+
+        <h3>Zikir Pagi</h3>
+
+        <div class="arabic">
+          سُبْحَانَ اللَّهِ وَبِحَمْدِهِ
+        </div>
+
+        <div class="meaning">
+          Maha Suci Allah dan segala puji bagi-Nya.
+        </div>
+
+      </div>
+
+      <div class="disclaimer">
+        Nota: Kandungan zikir hendaklah disemak semula dengan
+        ustaz/ustazah atau sumber agama yang dipercayai sebelum
+        diterbitkan kepada umum.
+      </div>
+
+    </div>
+
+    <!-- ZIKIR PETANG -->
+
+    <div id="petang" class="panel">
+
+      <div class="card">
+
+        <h3>Zikir Petang</h3>
+
+        <div class="arabic">
+          أَسْتَغْفِرُ اللَّهَ
+        </div>
+
+        <div class="meaning">
+          Aku memohon keampunan daripada Allah.
+        </div>
+
+      </div>
+
+      <div class="disclaimer">
+        Nota: Kandungan zikir hendaklah disemak semula dengan
+        ustaz/ustazah atau sumber agama yang dipercayai sebelum
+        diterbitkan kepada umum.
+      </div>
+
+    </div>
+
+    <!-- TASBIH -->
+
+    <div id="tasbih" class="panel">
+
+      <div class="tasbih-area">
+
+        <h2 class="tasbih-title">
+          Tasbih Digital
+        </h2>
+
+        <div class="target">
+          Sasaran: 33
+        </div>
+
+        <div
+          class="counter"
+          id="counter">
+          0
+        </div>
+
+        <button
+          class="tap-button"
+          onclick="countTasbih()">
+          TAP
+        </button>
+
+        <br>
+
+        <button
+          class="reset"
+          onclick="resetTasbih()">
+          Reset
+        </button>
+
+        <div
+          class="complete"
+          id="complete">
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  /* =============================
+     TAB
+  ============================= */
+
+  function openTab(tabName, button) {
+
+    const panels =
+      document.querySelectorAll(".panel");
+
+    panels.forEach(panel => {
+      panel.classList.remove("active");
+    });
+
+
+    const tabs =
+      document.querySelectorAll(".tab");
+
+    tabs.forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+
+    document
+      .getElementById(tabName)
+      .classList.add("active");
+
+    button.classList.add("active");
+
+  }
+
+
+  /* =============================
+     TEXT SCALE
+  ============================= */
+
+  let textScale = 1;
+
+  function changeText(direction) {
+
+    textScale += direction * 0.1;
+
+    if (textScale < 0.8)
+      textScale = 0.8;
+
+    if (textScale > 1.5)
+      textScale = 1.5;
+
+    document
+      .getElementById("textContent")
+      .style.fontSize =
+      textScale + "em";
+
+  }
+
+
+  /* =============================
+     TASBIH
+  ============================= */
+
+  let count = 0;
+
+  const target = 33;
+
+  function countTasbih() {
+
+    count++;
+
+    document
+      .getElementById("counter")
+      .innerText = count;
+
+
+    if (navigator.vibrate) {
+      navigator.vibrate(25);
+    }
+
+
+    if (count >= target) {
+
+      document
+        .getElementById("complete")
+        .innerText =
+        "✓ Alhamdulillah, 33 selesai";
+
+      setTimeout(() => {
+
+        count = 0;
+
+        document
+          .getElementById("counter")
+          .innerText = 0;
+
+        document
+          .getElementById("complete")
+          .innerText = "";
+
+      }, 1200);
+
+    }
+
+  }
+
+
+  function resetTasbih() {
+
+    count = 0;
+
+    document
+      .getElementById("counter")
+      .innerText = 0;
+
+    document
+      .getElementById("complete")
+      .innerText = "";
+
+  }
+
+</script>
+
+</body>
+</html>
