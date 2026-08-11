@@ -214,7 +214,7 @@
   <div class="splash-inner">
     <img class="splash-icon" src="apple-touch-icon.png" alt="">
     <div class="splash-title">ReminderMuslim</div>
-    <div class="splash-sub">Al-Quran • Zikir • Solat</div>
+    <div class="splash-sub" data-i18n="splashSub">Al-Quran • Zikir • Solat</div>
   </div>
 </div>
 
@@ -242,7 +242,7 @@
 
   <section class="screen" id="screen-quran">
     <div class="topbar">
-      <h1>Al-Quran & Zikir</h1>
+      <h1 data-i18n="quranDhikr">Al-Quran & Zikir</h1>
       <div class="actions">
         <button class="icon-btn" onclick="changeText(-1)">A−</button>
         <button class="icon-btn" onclick="changeText(1)">A+</button>
@@ -252,34 +252,34 @@
       <div class="hero" style="margin-bottom:14px">
         <div class="small muted">🕌 <span data-i18n="nextPrayer">Solat seterusnya</span></div>
         <div class="next-row">
-          <div class="next-name" id="miniPrayerName">Memuatkan...</div>
+          <div class="next-name" id="miniPrayerName" data-i18n="loading">Memuatkan...</div>
           <div class="next-time" id="miniPrayerTime">--:--</div>
         </div>
         <div class="small muted" id="miniPrayerCountdown" style="margin-top:7px"></div>
       </div>
       <div class="subtabs">
-        <button class="subtab active" onclick="openQuranTab('surah',this)">Surah</button>
-        <button class="subtab" onclick="openQuranTab('pagi',this)">Zikir Pagi</button>
-        <button class="subtab" onclick="openQuranTab('petang',this)">Zikir Petang</button>
-        <button class="subtab" onclick="openQuranTab('tasbih',this)">Tasbih</button>
+        <button class="subtab active" onclick="openQuranTab('surah',this)" data-i18n="surahTab">Surah</button>
+        <button class="subtab" onclick="openQuranTab('pagi',this)" data-i18n="morningDhikr">Zikir Pagi</button>
+        <button class="subtab" onclick="openQuranTab('petang',this)" data-i18n="eveningDhikr">Zikir Petang</button>
+        <button class="subtab" onclick="openQuranTab('tasbih',this)" data-i18n="tasbihTab">Tasbih</button>
       </div>
       <div id="q-surah" class="subpanel active">
-        <div class="info">10 surah pendek daripada koleksi Android ReminderMuslim. Tekan nama surah untuk buka/tutup.</div>
+        <div class="info" data-i18n="surahInfo">10 surah pendek daripada koleksi Android ReminderMuslim. Tekan nama surah untuk buka/tutup.</div>
         <div id="surahList"></div>
       </div>
       <div id="q-pagi" class="subpanel">
-        <div class="info">Zikir pagi daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
+        <div class="info" data-i18n="morningInfo">Zikir pagi daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
         <div id="zikirPagi"></div>
-        <div class="disclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
+        <div class="disclaimer" data-i18n="dhikrDisclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
       </div>
       <div id="q-petang" class="subpanel">
-        <div class="info">Zikir petang daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
+        <div class="info" data-i18n="eveningInfo">Zikir petang daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
         <div id="zikirPetang"></div>
-        <div class="disclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
+        <div class="disclaimer" data-i18n="dhikrDisclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
       </div>
       <div id="q-tasbih" class="subpanel">
         <div class="card tasbih">
-          <div class="section-title" style="margin:0">Tasbih Digital</div>
+          <div class="section-title" style="margin:0" data-i18n="digitalTasbih">Tasbih Digital</div>
           <div class="small muted" id="targetLabel">Sasaran: 33</div>
           <div class="preset-row">
             <button class="preset active" data-target="33" onclick="setTarget(33)">33</button>
@@ -287,9 +287,9 @@
             <button class="preset" data-target="100" onclick="setTarget(100)">100</button>
           </div>
           <button class="counter" onclick="countTasbih()" id="counter">0</button>
-          <div class="small muted" style="margin-top:12px">Tap bulatan untuk kira</div>
+          <div class="small muted" style="margin-top:12px" data-i18n="tapToCount">Tap bulatan untuk kira</div>
           <div id="tasbihDone" style="height:22px;margin-top:8px;color:var(--primary);font-weight:800"></div>
-          <button class="pill-btn" onclick="resetTasbih()">Reset</button>
+          <button class="pill-btn" onclick="resetTasbih()" data-i18n="reset">Reset</button>
         </div>
       </div>
     </div>
@@ -301,21 +301,21 @@
       <div class="hero">
         <div class="section-title" data-i18n="yourLocation">Lokasi anda</div>
         <div class="form-row">
-          <input class="field" id="prayerAddress" value="Kuala Lumpur, Malaysia" placeholder="cth: Kuching, Sarawak">
-          <button class="primary-btn" onclick="loadPrayerByAddress()">Cari</button>
+          <input class="field" id="prayerAddress" value="Kuala Lumpur, Malaysia" placeholder="cth: Kuching, Sarawak" data-i18n-placeholder="locationExample">
+          <button class="primary-btn" onclick="loadPrayerByAddress()" data-i18n="search">Cari</button>
         </div>
         <button class="pill-btn" style="margin-top:10px" onclick="loadPrayerByLocation()">📍 <span data-i18n="useLocation">Guna lokasi saya</span></button>
         <div class="tiny muted" id="prayerStatus" style="margin-top:10px"></div>
       </div>
       <div class="prayer-list" id="prayerList"></div>
-      <div class="disclaimer">Waktu solat dipaparkan berdasarkan pengiraan Aladhan. Untuk kegunaan rasmi di Malaysia, semak dengan JAKIM/Jabatan Mufti/autoriti negeri.</div>
+      <div class="disclaimer" data-i18n="prayerDisclaimer">Waktu solat dipaparkan berdasarkan pengiraan Aladhan. Untuk kegunaan rasmi di Malaysia, semak dengan JAKIM/Jabatan Mufti/autoriti negeri.</div>
     </div>
   </section>
 
   <section class="screen" id="screen-guide">
     <div class="topbar"><h1 data-i18n="guide">Panduan Solat</h1></div>
     <div class="page">
-      <div class="disclaimer" style="margin-top:0">⚠️ Panduan ini berdasarkan kandungan app Android dan ajaran umum yang lazim diamalkan di Malaysia. Sila rujuk ustaz/ustazah atau sumber rasmi untuk penjelasan lanjut.</div>
+      <div class="disclaimer" style="margin-top:0" data-i18n="guideDisclaimer">⚠️ Panduan ini berdasarkan kandungan app Android dan ajaran umum yang lazim diamalkan di Malaysia. Sila rujuk ustaz/ustazah atau sumber rasmi untuk penjelasan lanjut.</div>
       <div id="guideContent"></div>
     </div>
   </section>
@@ -333,11 +333,11 @@
     <div class="page">
       <div class="card">
         <div class="settings-row">
-          <div><strong data-i18n="language">Bahasa</strong><div class="tiny muted">Bahasa Melayu / English</div></div>
+          <div><strong data-i18n="language">Bahasa</strong><div class="tiny muted" data-i18n="languageDesc">Bahasa Melayu / English</div></div>
           <button class="pill-btn" id="settingsLang" onclick="toggleLanguage()">MS</button>
         </div>
         <div class="settings-row">
-          <div><strong data-i18n="textSize">Saiz teks</strong><div class="tiny muted">80% – 150%</div></div>
+          <div><strong data-i18n="textSize">Saiz teks</strong><div class="tiny muted" data-i18n="textSizeDesc">80% – 150%</div></div>
           <div class="actions"><button class="icon-btn" onclick="changeText(-1)">A−</button><button class="icon-btn" onclick="changeText(1)">A+</button></div>
         </div>
         <div class="settings-row">
@@ -349,7 +349,7 @@
           <button class="pill-btn" onclick="navigate('prayer')" data-i18n="change">Tukar</button>
         </div>
         <div class="settings-row" style="border-bottom:0">
-          <div><strong data-i18n="offline">Mod Offline</strong><div class="tiny muted">Surah, zikir, quote dan kegemaran tersimpan pada peranti.</div></div>
+          <div><strong data-i18n="offline">Mod Offline</strong><div class="tiny muted" data-i18n="offlineDesc">Surah, zikir, quote dan kegemaran tersimpan pada peranti.</div></div>
           <span>✅</span>
         </div>
       </div>
@@ -361,24 +361,24 @@
               <strong data-i18n="notifications">Notifikasi</strong>
               <div class="push-status" id="pushStatus">
                 <span class="push-dot" id="pushDot"></span>
-                <span id="pushStatusText">Memeriksa sokongan notifikasi...</span>
+                <span id="pushStatusText" data-i18n="pushChecking">Memeriksa sokongan notifikasi...</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="push-actions">
-          <button class="push-main-btn" id="pushToggleBtn" onclick="togglePushNotifications()" disabled>
+          <button class="push-main-btn" id="pushToggleBtn" onclick="togglePushNotifications()" disabled data-i18n="pushEnable">
             Aktifkan Notifikasi
           </button>
         </div>
 
-        <div class="push-help" id="pushHelp">
+        <div class="push-help" id="pushHelp" data-i18n="pushHelp">
           iPhone/iPad: ReminderMuslim perlu ditambah ke Home Screen dahulu. Kemudian buka app daripada ikon Home Screen dan tekan “Aktifkan Notifikasi”.
         </div>
       </div>
-      <div class="disclaimer">Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.</div>
-      <div class="version-note">ReminderMuslim PWA • v1.1</div>
+      <div class="disclaimer" data-i18n="reviewDisclaimer">Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.</div>
+      <div class="version-note">ReminderMuslim PWA • v1.1.1</div>
     </div>
   </section>
 
@@ -407,18 +407,137 @@ const I18N = {
     prayerShort:"Solat", guide:"Panduan Solat", guideShort:"Panduan", favorites:"Kegemaran",
     favShort:"Kegemaran", settings:"Tetapan", nextQuote:"Ayat / Quote Seterusnya",
     nextPrayer:"Solat seterusnya", yourLocation:"Lokasi anda", useLocation:"Guna lokasi saya",
-    language:"Bahasa", textSize:"Saiz teks", savedLocation:"Lokasi waktu solat", change:"Tukar",
-    offline:"Mod Offline", notifications:"Notifikasi", darkMode:"Mod Gelap", darkDesc:"Paparan lebih selesa pada waktu malam.", pushEnable:"Aktifkan Notifikasi", pushDisable:"Matikan Notifikasi"
+    language:"Bahasa", languageDesc:"Bahasa Melayu / English", textSize:"Saiz teks",
+    textSizeDesc:"80% – 150%", savedLocation:"Lokasi waktu solat", change:"Tukar",
+    offline:"Mod Offline", offlineDesc:"Surah, zikir, quote dan kegemaran tersimpan pada peranti.",
+    notifications:"Notifikasi", darkMode:"Mod Gelap", darkDesc:"Paparan lebih selesa pada waktu malam.",
+    pushEnable:"Aktifkan Notifikasi", pushDisable:"Matikan Notifikasi",
+    splashSub:"Al-Quran • Zikir • Solat", quranDhikr:"Al-Quran & Zikir", loading:"Memuatkan...",
+    surahTab:"Surah", morningDhikr:"Zikir Pagi", eveningDhikr:"Zikir Petang", tasbihTab:"Tasbih",
+    surahInfo:"10 surah pendek daripada koleksi Android ReminderMuslim. Tekan nama surah untuk buka/tutup.",
+    morningInfo:"Zikir pagi daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.",
+    eveningInfo:"Zikir petang daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.",
+    dhikrDisclaimer:"⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila semak dengan sumber agama yang dipercayai sebelum diterbitkan.",
+    digitalTasbih:"Tasbih Digital", tapToCount:"Tap bulatan untuk kira", reset:"Reset",
+    search:"Cari", locationExample:"cth: Kuching, Sarawak",
+    prayerDisclaimer:"Waktu solat dipaparkan berdasarkan pengiraan Aladhan. Untuk kegunaan rasmi di Malaysia, semak dengan JAKIM/Jabatan Mufti/autoriti negeri.",
+    guideDisclaimer:"⚠️ Panduan ini berdasarkan kandungan app Android dan ajaran umum yang lazim diamalkan di Malaysia. Sila rujuk ustaz/ustazah atau sumber rasmi untuk penjelasan lanjut.",
+    pushChecking:"Memeriksa sokongan notifikasi...",
+    pushHelp:"iPhone/iPad: ReminderMuslim perlu ditambah ke Home Screen dahulu. Kemudian buka app daripada ikon Home Screen dan tekan “Aktifkan Notifikasi”.",
+    reviewDisclaimer:"Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.",
+    verseUnit:"ayat", target:"Sasaran", items:"item", male:"Lelaki", female:"Perempuan",
+    guideNiat:"Niat Solat Fardu (5 Waktu)", guidePillars:"Rukun Solat",
+    guideSunnah:"Sunnah Ab'adh Dalam Solat",
+    guideSunnahNote:"Bukan rukun wajib; jika tertinggal, rujuk panduan sujud sahwi daripada sumber yang dipercayai.",
+    guideAfterPrayer:"Doa & Zikir Selepas Solat", guideDifferences:"Perbezaan Lelaki & Perempuan"
   },
   EN: {
     home:"Home", categories:"Categories", categoriesShort:"Categories", prayerTimes:"Prayer Times",
     prayerShort:"Prayer", guide:"Prayer Guide", guideShort:"Guide", favorites:"Favorites",
     favShort:"Favorites", settings:"Settings", nextQuote:"Next Verse / Quote",
     nextPrayer:"Next prayer", yourLocation:"Your location", useLocation:"Use my location",
-    language:"Language", textSize:"Text size", savedLocation:"Prayer location", change:"Change",
-    offline:"Offline Mode", notifications:"Notifications", darkMode:"Dark Mode", darkDesc:"A more comfortable display at night.", pushEnable:"Enable Notifications", pushDisable:"Disable Notifications"
+    language:"Language", languageDesc:"Malay / English", textSize:"Text size",
+    textSizeDesc:"80% – 150%", savedLocation:"Prayer location", change:"Change",
+    offline:"Offline Mode", offlineDesc:"Surahs, dhikr, quotes and favorites are stored on this device.",
+    notifications:"Notifications", darkMode:"Dark Mode", darkDesc:"A more comfortable display at night.",
+    pushEnable:"Enable Notifications", pushDisable:"Disable Notifications",
+    splashSub:"Quran • Dhikr • Prayer", quranDhikr:"Quran & Dhikr", loading:"Loading...",
+    surahTab:"Surahs", morningDhikr:"Morning Dhikr", eveningDhikr:"Evening Dhikr", tasbihTab:"Tasbih",
+    surahInfo:"10 short surahs from the ReminderMuslim Android collection. Tap a surah name to expand or collapse it.",
+    morningInfo:"Morning dhikr from the app collection. Review the content with a trusted religious teacher or official source before public release.",
+    eveningInfo:"Evening dhikr from the app collection. Review the content with a trusted religious teacher or official source before public release.",
+    dhikrDisclaimer:"⚠️ Dhikr text, transliteration and meanings are provided as a brief reference. Please verify them with trusted religious sources before publishing.",
+    digitalTasbih:"Digital Tasbih", tapToCount:"Tap the circle to count", reset:"Reset",
+    search:"Search", locationExample:"e.g. Kuching, Sarawak",
+    prayerDisclaimer:"Prayer times are shown using Aladhan calculations. For official use in Malaysia, verify them with JAKIM, the State Mufti Department or the relevant state authority.",
+    guideDisclaimer:"⚠️ This guide is based on the Android app content and common practices in Malaysia. Please refer to a trusted religious teacher or official source for further clarification.",
+    pushChecking:"Checking notification support...",
+    pushHelp:"iPhone/iPad: Add ReminderMuslim to the Home Screen first. Then open it from the Home Screen icon and tap “Enable Notifications”.",
+    reviewDisclaimer:"Before public release, review Quran translations, dhikr/hadith text and the prayer guide with official sources or a qualified authority.",
+    verseUnit:"verses", target:"Target", items:"items", male:"Men", female:"Women",
+    guideNiat:"Intention for the Five Obligatory Prayers", guidePillars:"Pillars of Prayer",
+    guideSunnah:"Sunnah Ab'adh in Prayer",
+    guideSunnahNote:"These are not obligatory pillars. If omitted, refer to trusted guidance on sujud sahwi.",
+    guideAfterPrayer:"Supplications & Dhikr After Prayer", guideDifferences:"Differences for Men & Women"
   }
 };
+
+
+const EN_CONTENT = {
+  surahs: [
+    "In the name of Allah, the Most Compassionate, the Most Merciful. All praise is for Allah, Lord of all worlds. The Most Compassionate, the Most Merciful. Master of the Day of Judgment. You alone we worship and You alone we ask for help. Guide us to the straight path — the path of those You have blessed, not those who earned Your anger nor those who went astray.",
+    "For the security and accustomed journeys of Quraysh — their journeys in winter and summer — let them worship the Lord of this House, Who fed them against hunger and made them safe from fear.",
+    "Have you seen the one who denies the religion? That is the one who repulses the orphan and does not encourage feeding the poor. So woe to those who pray yet are heedless of their prayer, those who only show off and withhold simple assistance.",
+    "Indeed, We have granted you abundant good. So pray to your Lord and sacrifice. Surely the one who hates you is the one cut off.",
+    "Say: O disbelievers, I do not worship what you worship, nor do you worship what I worship. I will never be a worshipper of what you worship, nor will you be worshippers of what I worship. For you is your religion, and for me is mine.",
+    "When Allah's help and victory come, and you see people entering Allah's religion in crowds, then glorify your Lord with praise and seek His forgiveness. Surely He is ever accepting of repentance.",
+    "May the hands of Abu Lahab perish, and may he perish. Neither his wealth nor what he earned will benefit him. He will enter a blazing Fire, and so will his wife, the carrier of firewood, with a rope of palm fibre around her neck.",
+    "Say: He is Allah, the One. Allah, the One upon Whom all depend. He neither begets nor is born, and there is none comparable to Him.",
+    "Say: I seek refuge in the Lord of daybreak, from the evil of what He created, from the evil of the night when it grows dark, from the evil of those who blow on knots, and from the evil of an envier when he envies.",
+    "Say: I seek refuge in the Lord of mankind, the King of mankind, the God of mankind, from the evil of the retreating whisperer who whispers into the hearts of mankind, from among jinn and mankind."
+  ],
+  zikirPagi: [
+    {title:"Ayat al-Kursi", meaning:"Allah — there is no deity worthy of worship except Him, the Ever-Living, the Sustainer of all. Neither drowsiness nor sleep overtakes Him. To Him belongs whatever is in the heavens and whatever is on the earth. Who can intercede with Him except by His permission? He knows what is before them and what is behind them. His Kursi extends over the heavens and the earth, and preserving them does not tire Him. He is the Most High, the Most Great.", count:null},
+    {title:"Al-Ikhlas, Al-Falaq & An-Nas", meaning:"Recite Surahs Al-Ikhlas, Al-Falaq and An-Nas — see the full text in the Surahs tab.", count:"3 times each"},
+    {title:"Morning Supplication", meaning:"We have entered the morning and all sovereignty belongs to Allah. All praise is for Allah. There is no deity worthy of worship except Allah alone, with no partner. To Him belongs all sovereignty and all praise, and He has power over all things.", count:null},
+    {title:"Sayyidul Istighfar (Master Supplication for Forgiveness)", meaning:"O Allah, You are my Lord. There is no deity worthy of worship except You. You created me and I am Your servant. I remain faithful to Your covenant and promise as much as I am able. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me and I acknowledge my sins, so forgive me, for none forgives sins except You.", count:null},
+    {title:"Protection (Hasbiyallah)", meaning:"Allah is sufficient for me. There is no deity worthy of worship except Him. In Him I place my trust, and He is the Lord of the Mighty Throne.", count:"7 times"},
+    {title:"Bismillah Protection", meaning:"In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.", count:"3 times"},
+    {title:"Contentment with Allah", meaning:"I am pleased with Allah as my Lord, Islam as my religion, and Muhammad ﷺ as my Prophet.", count:"3 times"}
+  ],
+  zikirPetang: [
+    {title:"Ayat al-Kursi", meaning:"Allah — there is no deity worthy of worship except Him, the Ever-Living, the Sustainer of all. Neither drowsiness nor sleep overtakes Him. To Him belongs whatever is in the heavens and whatever is on the earth. Who can intercede with Him except by His permission? He knows what is before them and what is behind them. His Kursi extends over the heavens and the earth, and preserving them does not tire Him. He is the Most High, the Most Great.", count:null},
+    {title:"Al-Ikhlas, Al-Falaq & An-Nas", meaning:"Recite Surahs Al-Ikhlas, Al-Falaq and An-Nas — see the full text in the Surahs tab.", count:"3 times each"},
+    {title:"Evening Supplication", meaning:"We have entered the evening and all sovereignty belongs to Allah. All praise is for Allah. There is no deity worthy of worship except Allah alone, with no partner. To Him belongs all sovereignty and all praise, and He has power over all things.", count:null},
+    {title:"Sayyidul Istighfar (Master Supplication for Forgiveness)", meaning:"O Allah, You are my Lord. There is no deity worthy of worship except You. You created me and I am Your servant. I remain faithful to Your covenant and promise as much as I am able. I seek refuge in You from the evil of what I have done. I acknowledge Your blessings upon me and I acknowledge my sins, so forgive me, for none forgives sins except You.", count:null},
+    {title:"Protection (Hasbiyallah)", meaning:"Allah is sufficient for me. There is no deity worthy of worship except Him. In Him I place my trust, and He is the Lord of the Mighty Throne.", count:"7 times"},
+    {title:"Bismillah Protection", meaning:"In the name of Allah, with Whose name nothing on earth or in heaven can cause harm, and He is the All-Hearing, the All-Knowing.", count:"3 times"},
+    {title:"Contentment with Allah", meaning:"I am pleased with Allah as my Lord, Islam as my religion, and Muhammad ﷺ as my Prophet.", count:"3 times"}
+  ],
+  guide: {
+    niat: [
+      {waktu:"Fajr", meaning:"I intend to perform the two-rak'ah obligatory Fajr prayer facing the qiblah for Allah Most High."},
+      {waktu:"Dhuhr", meaning:"I intend to perform the four-rak'ah obligatory Dhuhr prayer facing the qiblah for Allah Most High."},
+      {waktu:"Asr", meaning:"I intend to perform the four-rak'ah obligatory Asr prayer facing the qiblah for Allah Most High."},
+      {waktu:"Maghrib", meaning:"I intend to perform the three-rak'ah obligatory Maghrib prayer facing the qiblah for Allah Most High."},
+      {waktu:"Isha", meaning:"I intend to perform the four-rak'ah obligatory Isha prayer facing the qiblah for Allah Most High."}
+    ],
+    rukun: [
+      {title:"Intention", desc:"Form the intention in the heart together with the opening takbir. (See the five prayer intentions above.)"},
+      {title:"Standing upright (if able)", desc:"For obligatory prayers, stand if physically able. If unable, pray sitting or lying down according to one's ability."},
+      {title:"Opening Takbir (Takbiratul Ihram)", desc:"Raise both hands and say the takbir to begin the prayer."},
+      {title:"Reciting Al-Fatihah", desc:"Al-Fatihah is recited in every rak'ah. See the Quran tab for the full text."},
+      {title:"Ruku' (bowing)", desc:"Bow calmly with composure, placing the hands on the knees. The displayed remembrance is commonly recited three times."},
+      {title:"I'tidal", desc:"Return to an upright standing position calmly after ruku'."},
+      {title:"Sujud (twice in each rak'ah)", desc:"Seven body parts touch the ground: the forehead, two palms, two knees and the toes of both feet. The displayed remembrance is commonly recited three times."},
+      {title:"Sitting between the two prostrations", desc:"Sit calmly before the second prostration."},
+      {title:"Final tashahhud sitting", desc:"Sit to recite the final tashahhud before giving salam."},
+      {title:"Sending blessings upon the Prophet", desc:"Includes sending blessings upon Prophet Muhammad ﷺ after the final tashahhud."},
+      {title:"Giving salam", desc:"Turn to the right and left while giving salam to conclude the prayer."},
+      {title:"Correct order", desc:"Perform the pillars in their proper sequence."}
+    ],
+    sunnah: [
+      {title:"First Tashahhud", desc:"Recited after the second rak'ah in prayers of more than two rak'ahs, before standing for the next rak'ah. The displayed form is shorter than the final tashahhud."}
+    ],
+    doa: [
+      {title:"Istighfar", meaning:"I seek Allah's forgiveness.", count:"3 times"},
+      {title:"Supplication for Peace", meaning:"O Allah, You are Peace and from You comes peace. Blessed are You, O Possessor of Majesty and Honour.", count:null},
+      {title:"Tasbih", meaning:"Glory be to Allah.", count:"33 times"},
+      {title:"Tahmid", meaning:"All praise is for Allah.", count:"33 times"},
+      {title:"Takbir", meaning:"Allah is the Greatest.", count:"34 times (making 100 with the tasbih and tahmid above)"},
+      {title:"Closing Tahlil", meaning:"There is no deity worthy of worship except Allah alone, with no partner. To Him belongs all sovereignty and all praise, and He has power over all things.", count:null}
+    ],
+    differences: [
+      {aspect:"'Awrah during prayer", male:"From the navel to the knees.", female:"The whole body except the face and hands, according to the majority of scholars."},
+      {aspect:"Position of folded hands", male:"Held with a little more space from the chest.", female:"Held closer to the chest."},
+      {aspect:"During ruku'", male:"The elbows are kept away from the body.", female:"The limbs are kept closer to the body for greater covering."},
+      {aspect:"During sujud", male:"The abdomen is kept away from the thighs and the elbows are raised from the floor.", female:"The body is kept closer together for greater covering."},
+      {aspect:"Recitation in audible prayers (Fajr, Maghrib, Isha)", male:"An imam is encouraged to recite aloud in the audible prayers.", female:"Recitation is generally kept quieter, especially when non-mahram men are nearby."},
+      {aspect:"Sitting posture", male:"Iftirash/tawarruk as normally practised.", female:"The same basic postures apply; some guidance encourages a posture that provides greater covering."}
+    ]
+  }
+};
+
 
 let language = localStorage.getItem("rmLanguage") || "MS";
 let currentRoute = "home";
@@ -448,6 +567,23 @@ function breaks(v){ return esc(v).replaceAll("\n","<br>"); }
 
 function tr(key){ return I18N[language][key] || key; }
 
+function localizedSource(source){
+  if(language==="MS") return source;
+  return String(source||"")
+    .replace(/^Riwayat\s+/i,"Narrated by ")
+    .replace(/^Inspirasi daripada\s+/i,"Inspired by ")
+    .replace(/^Kata Hikmah Ulama$/i,"Scholarly Wisdom")
+    .replace(/^Kata Hikmah$/i,"Wisdom");
+}
+function localizedPrayerSource(source){
+  if(language==="MS"){
+    if(source==="Device location") return "Lokasi peranti";
+    return source;
+  }
+  if(source==="Lokasi peranti") return "Device location";
+  return source;
+}
+
 
 function applyTheme(){
   document.documentElement.dataset.theme = darkMode ? "dark" : "light";
@@ -469,16 +605,30 @@ function toggleDarkMode(){
 
 function applyLanguage(){
   document.documentElement.lang = language === "MS" ? "ms" : "en";
+
   document.querySelectorAll("[data-i18n]").forEach(el=>{
     const key = el.dataset.i18n;
     if (I18N[language][key]) el.textContent = I18N[language][key];
   });
+
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+    const key = el.dataset.i18nPlaceholder;
+    if (I18N[language][key]) el.setAttribute("placeholder", I18N[language][key]);
+  });
+
   document.getElementById("langQuick").textContent = language;
   document.getElementById("settingsLang").textContent = language;
+
   renderHome();
   renderCategories();
   renderFavorites();
+  renderQuran();
+  renderGuide();
+  updateTasbih();
   renderPrayerListFromCache();
+  updateMiniPrayer();
+  updateSettings();
+  setTimeout(updatePushUI,0);
 }
 function toggleLanguage(){
   language = language === "MS" ? "EN" : "MS";
@@ -536,7 +686,7 @@ function renderHome(){
         <span class="quote-type">${quoteTypeLabel(q.type)}</span>
         ${q.arabic?`<div class="quote-arab">${esc(q.arabic)}</div>`:""}
         <div class="quote-text">${esc(text)}</div>
-        <div class="quote-source">— ${esc(q.source)}</div>
+        <div class="quote-source">— ${esc(localizedSource(q.source))}</div>
         <div class="quote-buttons">
           <button class="round" onclick="toggleFavorite(${q.id})" aria-label="favorite">${favorite?"♥":"♡"}</button>
           <button class="round" onclick="shareQuote(${q.id})" aria-label="share">↗</button>
@@ -591,12 +741,12 @@ function renderFavorites(){
     <button class="fav-remove" onclick="toggleFavorite(${q.id})">×</button>
     ${q.arabic?`<div class="arabic">${esc(q.arabic)}</div>`:""}
     <div class="meaning">${esc(language==="MS"?q.ms:q.en)}</div>
-    <div class="small muted" style="margin-top:8px">— ${esc(q.source)}</div>
+    <div class="small muted" style="margin-top:8px">— ${esc(localizedSource(q.source))}</div>
   </div>`).join("");
 }
 async function shareQuote(id){
   const q=RM_DATA.quotes.find(x=>x.id===id);
-  const body=`${language==="MS"?q.ms:q.en}\n\n— ${q.source}\n\nReminderMuslim`;
+  const body=`${language==="MS"?q.ms:q.en}\n\n— ${localizedSource(q.source)}\n\nReminderMuslim`;
   try{
     if(navigator.share) await navigator.share({title:"ReminderMuslim",text:body});
     else { await navigator.clipboard.writeText(body); toast(language==="MS"?"Teks disalin":"Text copied"); }
@@ -605,26 +755,37 @@ async function shareQuote(id){
 
 /* Quran + Zikir */
 function renderQuran(){
-  document.getElementById("surahList").innerHTML=RM_DATA.surahs.map((s,i)=>`
+  document.getElementById("surahList").innerHTML=RM_DATA.surahs.map((s,i)=>{
+    const meaning = language==="MS" ? s.maksud : EN_CONTENT.surahs[i];
+    const unit = language==="MS" ? "ayat" : (s.jumlahAyat===1 ? "verse" : "verses");
+    return `
     <article class="accordion" id="surah-${i}">
       <button class="accordion-head" onclick="toggleAccordion('surah-${i}')">
-        <div>${esc(s.nama)} <span class="small muted">(${esc(s.namaArab)}) • ${s.jumlahAyat} ayat</span></div><span class="arrow">⌄</span>
+        <div>${esc(s.nama)} <span class="small muted">(${esc(s.namaArab)}) • ${s.jumlahAyat} ${unit}</span></div><span class="arrow">⌄</span>
       </button>
       <div class="accordion-body">
         <div class="arabic">${breaks(s.arab)}</div>
         <div class="rumi">${esc(s.rumi)}</div>
-        <div class="meaning">${esc(s.maksud)}</div>
+        <div class="meaning">${esc(meaning)}</div>
       </div>
-    </article>`).join("");
-  renderZikir(RM_DATA.zikirPagi,"zikirPagi");
-  renderZikir(RM_DATA.zikirPetang,"zikirPetang");
+    </article>`;
+  }).join("");
+
+  renderZikir(RM_DATA.zikirPagi,"zikirPagi","zikirPagi");
+  renderZikir(RM_DATA.zikirPetang,"zikirPetang","zikirPetang");
 }
-function renderZikir(list,id){
-  document.getElementById(id).innerHTML=list.map(z=>`<article class="card">
-    <div class="zikir-title"><span>${esc(z.title)}</span>${z.bilangan?`<span class="badge">${esc(z.bilangan)}</span>`:""}</div>
-    ${z.arab?`<div class="arabic">${breaks(z.arab)}</div><div class="rumi">${esc(z.rumi)}</div>`:""}
-    <div class="meaning">${esc(z.maksud)}</div>
-  </article>`).join("");
+function renderZikir(list,id,enKey){
+  document.getElementById(id).innerHTML=list.map((z,i)=>{
+    const en = EN_CONTENT[enKey][i];
+    const title = language==="MS" ? z.title : en.title;
+    const meaning = language==="MS" ? z.maksud : en.meaning;
+    const count = language==="MS" ? z.bilangan : en.count;
+    return `<article class="card">
+      <div class="zikir-title"><span>${esc(title)}</span>${count?`<span class="badge">${esc(count)}</span>`:""}</div>
+      ${z.arab?`<div class="arabic">${breaks(z.arab)}</div><div class="rumi">${esc(z.rumi)}</div>`:""}
+      <div class="meaning">${esc(meaning)}</div>
+    </article>`;
+  }).join("");
 }
 function toggleAccordion(id){ document.getElementById(id)?.classList.toggle("open"); }
 function openQuranTab(name,button){
@@ -688,7 +849,7 @@ function renderPrayerListFromCache(){
   const keys=["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"];
   el.innerHTML=keys.map(k=>`<div class="prayer-item"><span>${prayerLabels[language][k]}</span><strong>${cleanTime(t[k])||"--:--"}</strong></div>`).join("");
   const source=prayerCache.source||"";
-  document.getElementById("prayerStatus").textContent=(navigator.onLine?"":"Offline • ")+source;
+  document.getElementById("prayerStatus").textContent=(navigator.onLine?"":"Offline • ")+localizedPrayerSource(source);
 }
 async function fetchJson(url){
   const r=await fetch(url,{cache:"no-store"}); if(!r.ok)throw new Error("HTTP "+r.status);
@@ -754,17 +915,48 @@ function blockArabic(arab,rumi){
 }
 function renderGuide(){
   const g=RM_DATA.guide;
-  const niat=g.niat.map(x=>`<article class="accordion"><button class="accordion-head" onclick="this.parentElement.classList.toggle('open')"><span>${esc(x.waktu)}</span><span class="arrow">⌄</span></button><div class="accordion-body">${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(x.maksud)}</div></div></article>`).join("");
-  const rukun=g.rukun.map((x,i)=>`<article class="card"><div><span class="number">${i+1}</span><strong>${esc(x.title)}</strong></div><div class="meaning" style="margin-top:10px">${esc(x.desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`).join("");
-  const sunnah=g.sunnahAbadh.map(x=>`<article class="card"><strong>${esc(x.title)}</strong><div class="meaning" style="margin-top:9px">${esc(x.desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`).join("");
-  const doa=g.doaSelepasSolat.map(x=>`<article class="card"><div class="zikir-title"><span>${esc(x.title)}</span>${x.bilangan?`<span class="badge">${esc(x.bilangan)}</span>`:""}</div>${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(x.maksud)}</div></article>`).join("");
-  const beza=g.perbezaan.map(x=>`<article class="card"><strong>${esc(x.aspek)}</strong><div class="compare"><div><b>Lelaki:</b> ${esc(x.lelaki)}</div><div><b>Perempuan:</b> ${esc(x.perempuan)}</div></div></article>`).join("");
+  const eg=EN_CONTENT.guide;
+
+  const niat=g.niat.map((x,i)=>{
+    const title=language==="MS"?x.waktu:eg.niat[i].waktu;
+    const meaning=language==="MS"?x.maksud:eg.niat[i].meaning;
+    return `<article class="accordion"><button class="accordion-head" onclick="this.parentElement.classList.toggle('open')"><span>${esc(title)}</span><span class="arrow">⌄</span></button><div class="accordion-body">${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(meaning)}</div></div></article>`;
+  }).join("");
+
+  const rukun=g.rukun.map((x,i)=>{
+    const title=language==="MS"?x.title:eg.rukun[i].title;
+    const desc=language==="MS"?x.desc:eg.rukun[i].desc;
+    return `<article class="card"><div><span class="number">${i+1}</span><strong>${esc(title)}</strong></div><div class="meaning" style="margin-top:10px">${esc(desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`;
+  }).join("");
+
+  const sunnah=g.sunnahAbadh.map((x,i)=>{
+    const title=language==="MS"?x.title:eg.sunnah[i].title;
+    const desc=language==="MS"?x.desc:eg.sunnah[i].desc;
+    return `<article class="card"><strong>${esc(title)}</strong><div class="meaning" style="margin-top:9px">${esc(desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`;
+  }).join("");
+
+  const doa=g.doaSelepasSolat.map((x,i)=>{
+    const en=eg.doa[i];
+    const title=language==="MS"?x.title:en.title;
+    const meaning=language==="MS"?x.maksud:en.meaning;
+    const count=language==="MS"?x.bilangan:en.count;
+    return `<article class="card"><div class="zikir-title"><span>${esc(title)}</span>${count?`<span class="badge">${esc(count)}</span>`:""}</div>${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(meaning)}</div></article>`;
+  }).join("");
+
+  const beza=g.perbezaan.map((x,i)=>{
+    const en=eg.differences[i];
+    const aspect=language==="MS"?x.aspek:en.aspect;
+    const male=language==="MS"?x.lelaki:en.male;
+    const female=language==="MS"?x.perempuan:en.female;
+    return `<article class="card"><strong>${esc(aspect)}</strong><div class="compare"><div><b>${tr("male")}:</b> ${esc(male)}</div><div><b>${tr("female")}:</b> ${esc(female)}</div></div></article>`;
+  }).join("");
+
   document.getElementById("guideContent").innerHTML=`
-    <div class="guide-section"><div class="guide-heading">Niat Solat Fardu (5 Waktu)</div>${niat}</div>
-    <div class="guide-section"><div class="guide-heading">Rukun Solat</div>${rukun}</div>
-    <div class="guide-section"><div class="guide-heading">Sunnah Ab'adh Dalam Solat</div><div class="small muted" style="margin-bottom:10px">Bukan rukun wajib; jika tertinggal, rujuk panduan sujud sahwi daripada sumber yang dipercayai.</div>${sunnah}</div>
-    <div class="guide-section"><div class="guide-heading">Doa & Zikir Selepas Solat</div>${doa}</div>
-    <div class="guide-section"><div class="guide-heading">Perbezaan Lelaki & Perempuan</div>${beza}</div>`;
+    <div class="guide-section"><div class="guide-heading">${tr("guideNiat")}</div>${niat}</div>
+    <div class="guide-section"><div class="guide-heading">${tr("guidePillars")}</div>${rukun}</div>
+    <div class="guide-section"><div class="guide-heading">${tr("guideSunnah")}</div><div class="small muted" style="margin-bottom:10px">${tr("guideSunnahNote")}</div>${sunnah}</div>
+    <div class="guide-section"><div class="guide-heading">${tr("guideAfterPrayer")}</div>${doa}</div>
+    <div class="guide-section"><div class="guide-heading">${tr("guideDifferences")}</div>${beza}</div>`;
 }
 
 /* Settings */
