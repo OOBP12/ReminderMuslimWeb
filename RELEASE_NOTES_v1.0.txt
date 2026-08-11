@@ -1,0 +1,21 @@
+ReminderMuslim v1.0
+
+Release pertama yang stabil untuk versi PWA/iPhone.
+
+Highlights:
+- Full navigation: Utama, Kategori, Quran, Solat, Panduan, Kegemaran
+- Surah + Zikir Pagi + Zikir Petang
+- Tasbih Digital dengan sasaran 33 / 99 / 100
+- Waktu solat berdasarkan lokasi
+- Countdown waktu solat seterusnya
+- Offline mode
+- Dark mode
+- BM / English
+- Text scaling A- / A+
+- Favorite & Share
+- Panduan Solat
+- Install ke iPhone Home Screen sebagai PWA
+
+Nota:
+- Waktu solat ialah rujukan berasaskan kaedah pengiraan lokasi dan bukan pengganti jadual rasmi pihak berautoriti.
+- Kandungan agama hendaklah disemak dengan sumber agama yang dipercayai sebelum penerbitan umum.
