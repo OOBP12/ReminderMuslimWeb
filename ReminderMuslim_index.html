@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#eef5f1">
+  <title>ReminderMuslim</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ReminderMuslim">
+  <style>
+    :root{
+      --scale:1;--primary:#245641;--primary2:#39735a;--soft:#e5f0ea;
+      --bg:#f4f7f5;--surface:#fff;--text:#202622;--muted:#6d7872;--line:#e3e9e5;
+      --danger:#a53a3a;--nav:#173b2f;--shadow:0 5px 20px rgba(23,59,47,.07);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+    button,input{font:inherit} button{cursor:pointer}
+    .app{max-width:720px;margin:auto;min-height:100vh}
+    .screen{display:none;min-height:calc(100vh - 78px)} .screen.active{display:block}
+    .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
+      padding:calc(12px + env(safe-area-inset-top)) 17px 12px;background:rgba(255,255,255,.96);
+      backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .topbar h1{font-size:20px;margin:0;color:var(--primary)}
+    .actions{display:flex;gap:7px;align-items:center}
+    .icon-btn,.pill-btn{border:0;background:#edf2ef;color:var(--primary);border-radius:12px;min-height:38px;padding:8px 11px;font-weight:750}
+    .page{padding:17px}
+    .hero{background:linear-gradient(145deg,#fff,#e9f4ee);border:1px solid #dfeae4;border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+    .section-title{font-size:18px;color:var(--primary);font-weight:800;margin:4px 0 13px}
+    .muted{color:var(--muted)} .small{font-size:12px}.tiny{font-size:11px}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:17px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.025)}
+    .quote-card{min-height:455px;border-radius:25px;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;box-shadow:0 10px 30px rgba(25,65,48,.18);position:relative;overflow:hidden}
+    .quote-card:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.67))}
+    .quote-inner{position:relative;z-index:1;text-align:center}
+    .quote-type{display:inline-block;padding:6px 11px;border-radius:99px;background:rgba(255,255,255,.16);font-size:10px;font-weight:800;letter-spacing:.6px}
+    .quote-arab{direction:rtl;font-family:"Geeza Pro","Traditional Arabic",serif;font-size:calc(27px * var(--scale));line-height:1.8;margin:18px 0}
+    .quote-text{font-size:calc(17px * var(--scale));line-height:1.6;font-weight:650}
+    .quote-source{font-size:12px;font-style:italic;opacity:.86;margin-top:14px}
+    .quote-buttons{display:flex;justify-content:center;gap:10px;margin-top:17px}
+    .round{width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:20px}
+    .primary-btn{border:0;border-radius:99px;background:var(--primary);color:#fff;font-weight:800;padding:12px 18px}
+    .center{text-align:center}.home-next{margin:20px auto 4px;display:block}
+    .filter-chip{display:inline-flex;gap:7px;align-items:center;background:var(--primary);color:#fff;border-radius:99px;padding:7px 12px;margin:0 0 12px;font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .category{min-height:118px;text-align:left;border:1px solid var(--line);background:#fff;border-radius:20px;padding:15px;display:flex;flex-direction:column;justify-content:space-between}
+    .category .emoji{font-size:25px}.category strong{color:var(--primary);font-size:15px}.category span{color:var(--muted);font-size:11px}
+    .subtabs{display:flex;gap:7px;overflow-x:auto;padding:3px 0 14px;scrollbar-width:none}.subtabs::-webkit-scrollbar{display:none}
+    .subtab{flex-shrink:0;border:0;border-radius:99px;background:#e6ebe8;padding:9px 14px;font-size:12px;font-weight:800;color:#46504b}.subtab.active{background:var(--primary);color:#fff}
+    .subpanel{display:none}.subpanel.active{display:block}
+    .info{background:var(--soft);color:#3c5549;border-radius:14px;padding:13px 14px;font-size:12px;line-height:1.55;margin-bottom:13px}
+    .accordion{background:#fff;border:1px solid var(--line);border-radius:17px;margin-bottom:11px;overflow:hidden}
+    .accordion-head{width:100%;border:0;background:transparent;display:flex;justify-content:space-between;align-items:center;padding:16px;text-align:left;color:var(--primary);font-weight:800}
+    .accordion-body{display:none;padding:0 17px 17px}.accordion.open .accordion-body{display:block}.accordion.open .arrow{transform:rotate(180deg)}
+    .arabic{direction:rtl;text-align:right;font-family:"Geeza Pro","Traditional Arabic",serif;font-size:calc(25px * var(--scale));line-height:1.9;margin:8px 0 13px}
+    .rumi{font-style:italic;color:#647169;font-size:calc(14px * var(--scale));line-height:1.6;margin-bottom:10px}
+    .meaning{font-size:calc(14px * var(--scale));line-height:1.65}
+    .badge{display:inline-block;background:var(--soft);color:var(--primary);border-radius:99px;padding:5px 9px;font-size:10px;font-weight:800}
+    .zikir-title{display:flex;justify-content:space-between;gap:10px;color:var(--primary);font-weight:800}
+    .disclaimer{background:#ecefed;color:#68726c;border-radius:14px;padding:14px;font-size:11px;line-height:1.55;margin-top:14px}
+    .tasbih{text-align:center;padding:28px 18px}.preset-row{display:flex;justify-content:center;gap:8px;margin:18px 0 25px}
+    .preset{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font-weight:800}.preset.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .counter{width:190px;height:190px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 25%,#fff,#e7f1ec);box-shadow:0 9px 25px rgba(36,86,65,.14);color:var(--primary);font-size:54px;font-weight:850}
+    .form-row{display:flex;gap:8px}.field{width:100%;border:1px solid #ccd8d1;background:#fff;border-radius:13px;padding:12px 13px;outline:none}
+    .field:focus{border-color:var(--primary)}.prayer-list{display:grid;gap:9px;margin-top:15px}
+    .prayer-item{display:flex;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}.prayer-item strong{color:var(--primary)}
+    .next-prayer{margin-top:14px;padding-top:14px;border-top:1px solid #dbe6df}.next-row{display:flex;justify-content:space-between;align-items:center}.next-name{font-size:18px;color:var(--primary);font-weight:800}.next-time{font-size:25px;color:var(--primary);font-weight:850}
+    .guide-section{margin-top:22px}.guide-heading{font-size:18px;color:var(--primary);font-weight:850;margin-bottom:11px}
+    .number{width:29px;height:29px;border-radius:50%;display:inline-grid;place-items:center;background:var(--primary);color:#fff;font-size:12px;font-weight:800;margin-right:8px}
+    .compare{display:grid;gap:8px;margin-top:9px}.compare div{background:#f7f9f8;border-radius:11px;padding:10px;font-size:12px;line-height:1.5}
+    .empty{padding:60px 20px;text-align:center;color:var(--muted)}
+    .fav-card{position:relative;padding-right:48px}.fav-remove{position:absolute;right:12px;top:12px;border:0;background:#f1f4f2;border-radius:50%;width:34px;height:34px}
+    .settings-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 0;border-bottom:1px solid var(--line)}
+    .switch{width:50px;height:29px;border:0;border-radius:99px;background:#ccd5d0;padding:3px}.switch span{display:block;width:23px;height:23px;border-radius:50%;background:#fff;transition:.2s}.switch.on{background:var(--primary)}.switch.on span{transform:translateX(21px)}
+    .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--nav);padding:7px max(7px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));display:flex;justify-content:center}
+    .nav-inner{width:min(720px,100%);display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+    .nav-btn{border:0;background:transparent;color:#9eb5aa;padding:6px 2px 4px;border-radius:12px;font-size:9px;font-weight:700;min-width:0}
+    .nav-btn .nav-icon{display:block;font-size:19px;line-height:22px}.nav-btn.active{background:#285844;color:#fff}
+    .toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%) translateY(15px);opacity:0;pointer-events:none;background:#18251f;color:#fff;border-radius:99px;padding:10px 15px;font-size:12px;z-index:100;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    @media(max-width:390px){.nav-btn{font-size:8px}.nav-btn .nav-icon{font-size:18px}.page{padding:14px}.quote-card{min-height:430px}}
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <section class="screen active" id="screen-home">
+    <div class="topbar">
+      <h1>Reminder Muslim</h1>
+      <div class="actions">
+        <button class="pill-btn" id="langQuick" onclick="toggleLanguage()">MS</button>
+        <button class="icon-btn" onclick="navigate('settings')">⚙️</button>
+      </div>
+    </div>
+    <div class="page">
+      <div id="homeFilter"></div>
+      <div id="homeQuote"></div>
+      <button class="primary-btn home-next" onclick="nextQuote()">↻ <span data-i18n="nextQuote">Ayat / Quote Seterusnya</span></button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-categories">
+    <div class="topbar"><h1 data-i18n="categories">Kategori</h1></div>
+    <div class="page"><div class="grid" id="categoryGrid"></div></div>
+  </section>
+
+  <section class="screen" id="screen-quran">
+    <div class="topbar">
+      <h1>Al-Quran & Zikir</h1>
+      <div class="actions">
+        <button class="icon-btn" onclick="changeText(-1)">A−</button>
+        <button class="icon-btn" onclick="changeText(1)">A+</button>
+      </div>
+    </div>
+    <div class="page">
+      <div class="hero" style="margin-bottom:14px">
+        <div class="small muted">🕌 <span data-i18n="nextPrayer">Solat seterusnya</span></div>
+        <div class="next-row">
+          <div class="next-name" id="miniPrayerName">Memuatkan...</div>
+          <div class="next-time" id="miniPrayerTime">--:--</div>
+        </div>
+        <div class="small muted" id="miniPrayerCountdown" style="margin-top:7px"></div>
+      </div>
+      <div class="subtabs">
+        <button class="subtab active" onclick="openQuranTab('surah',this)">Surah</button>
+        <button class="subtab" onclick="openQuranTab('pagi',this)">Zikir Pagi</button>
+        <button class="subtab" onclick="openQuranTab('petang',this)">Zikir Petang</button>
+        <button class="subtab" onclick="openQuranTab('tasbih',this)">Tasbih</button>
+      </div>
+      <div id="q-surah" class="subpanel active">
+        <div class="info">10 surah pendek daripada koleksi Android ReminderMuslim. Tekan nama surah untuk buka/tutup.</div>
+        <div id="surahList"></div>
+      </div>
+      <div id="q-pagi" class="subpanel">
+        <div class="info">Zikir pagi daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
+        <div id="zikirPagi"></div>
+        <div class="disclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
+      </div>
+      <div id="q-petang" class="subpanel">
+        <div class="info">Zikir petang daripada koleksi app. Semak kandungan dengan ustaz/ustazah atau sumber rasmi sebelum penerbitan awam.</div>
+        <div id="zikirPetang"></div>
+        <div class="disclaimer">⚠️ Kandungan zikir, transliterasi dan maksud disediakan untuk rujukan ringkas. Sila cross-check dengan sumber agama yang dipercayai sebelum publish.</div>
+      </div>
+      <div id="q-tasbih" class="subpanel">
+        <div class="card tasbih">
+          <div class="section-title" style="margin:0">Tasbih Digital</div>
+          <div class="small muted" id="targetLabel">Sasaran: 33</div>
+          <div class="preset-row">
+            <button class="preset active" data-target="33" onclick="setTarget(33)">33</button>
+            <button class="preset" data-target="99" onclick="setTarget(99)">99</button>
+            <button class="preset" data-target="100" onclick="setTarget(100)">100</button>
+          </div>
+          <button class="counter" onclick="countTasbih()" id="counter">0</button>
+          <div class="small muted" style="margin-top:12px">Tap bulatan untuk kira</div>
+          <div id="tasbihDone" style="height:22px;margin-top:8px;color:var(--primary);font-weight:800"></div>
+          <button class="pill-btn" onclick="resetTasbih()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-prayer">
+    <div class="topbar"><h1 data-i18n="prayerTimes">Waktu Solat</h1></div>
+    <div class="page">
+      <div class="hero">
+        <div class="section-title" data-i18n="yourLocation">Lokasi anda</div>
+        <div class="form-row">
+          <input class="field" id="prayerAddress" value="Kuala Lumpur, Malaysia" placeholder="cth: Kuching, Sarawak">
+          <button class="primary-btn" onclick="loadPrayerByAddress()">Cari</button>
+        </div>
+        <button class="pill-btn" style="margin-top:10px" onclick="loadPrayerByLocation()">📍 <span data-i18n="useLocation">Guna lokasi saya</span></button>
+        <div class="tiny muted" id="prayerStatus" style="margin-top:10px"></div>
+      </div>
+      <div class="prayer-list" id="prayerList"></div>
+      <div class="disclaimer">Waktu solat dipaparkan berdasarkan pengiraan Aladhan. Untuk kegunaan rasmi di Malaysia, semak dengan JAKIM/Jabatan Mufti/autoriti negeri.</div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-guide">
+    <div class="topbar"><h1 data-i18n="guide">Panduan Solat</h1></div>
+    <div class="page">
+      <div class="disclaimer" style="margin-top:0">⚠️ Panduan ini berdasarkan kandungan app Android dan ajaran umum yang lazim diamalkan di Malaysia. Sila rujuk ustaz/ustazah atau sumber rasmi untuk penjelasan lanjut.</div>
+      <div id="guideContent"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-favorites">
+    <div class="topbar"><h1 data-i18n="favorites">Kegemaran</h1></div>
+    <div class="page" id="favoritesList"></div>
+  </section>
+
+  <section class="screen" id="screen-settings">
+    <div class="topbar">
+      <h1 data-i18n="settings">Tetapan</h1>
+      <button class="icon-btn" onclick="navigate('home')">←</button>
+    </div>
+    <div class="page">
+      <div class="card">
+        <div class="settings-row">
+          <div><strong data-i18n="language">Bahasa</strong><div class="tiny muted">Bahasa Melayu / English</div></div>
+          <button class="pill-btn" id="settingsLang" onclick="toggleLanguage()">MS</button>
+        </div>
+        <div class="settings-row">
+          <div><strong data-i18n="textSize">Saiz teks</strong><div class="tiny muted">80% – 150%</div></div>
+          <div class="actions"><button class="icon-btn" onclick="changeText(-1)">A−</button><button class="icon-btn" onclick="changeText(1)">A+</button></div>
+        </div>
+        <div class="settings-row">
+          <div><strong data-i18n="savedLocation">Lokasi waktu solat</strong><div class="tiny muted" id="settingsLocation"></div></div>
+          <button class="pill-btn" onclick="navigate('prayer')" data-i18n="change">Tukar</button>
+        </div>
+        <div class="settings-row" style="border-bottom:0">
+          <div><strong data-i18n="offline">Mod Offline</strong><div class="tiny muted">Surah, zikir, quote dan kegemaran tersimpan pada peranti.</div></div>
+          <span>✅</span>
+        </div>
+      </div>
+      <div class="card">
+        <strong data-i18n="notifications">Notifikasi</strong>
+        <p class="small muted" style="line-height:1.6;margin-bottom:0">Versi PWA ini belum menggunakan scheduled local notification seperti Android. Kita kekalkan bahagian ini OFF supaya app stabil; web push boleh ditambah kemudian.</p>
+      </div>
+      <div class="disclaimer">Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.</div>
+    </div>
+  </section>
+
+</div>
+
+<nav class="bottom-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-route="home" onclick="navigate('home')"><span class="nav-icon">⌂</span><span data-i18n="home">Utama</span></button>
+    <button class="nav-btn" data-route="categories" onclick="navigate('categories')"><span class="nav-icon">▦</span><span data-i18n="categoriesShort">Kategori</span></button>
+    <button class="nav-btn" data-route="quran" onclick="navigate('quran')"><span class="nav-icon">📖</span><span>Quran</span></button>
+    <button class="nav-btn" data-route="prayer" onclick="navigate('prayer')"><span class="nav-icon">🕌</span><span data-i18n="prayerShort">Solat</span></button>
+    <button class="nav-btn" data-route="guide" onclick="navigate('guide')"><span class="nav-icon">☷</span><span data-i18n="guideShort">Panduan</span></button>
+    <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')"><span class="nav-icon">♥</span><span data-i18n="favShort">Kegemaran</span></button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+<script>
+const RM_DATA={themes:{"SABAR":{"ms":"Sabar","en":"Patience","emoji":"🌿"},"SYUKUR":{"ms":"Syukur","en":"Gratitude","emoji":"🤲"},"REZEKI":{"ms":"Rezeki","en":"Sustenance","emoji":"✨"},"TAUBAT":{"ms":"Taubat","en":"Repentance","emoji":"🕊️"},"ILMU":{"ms":"Ilmu","en":"Knowledge","emoji":"📚"},"DOA":{"ms":"Doa","en":"Prayer","emoji":"🤍"},"KASIH_SAYANG":{"ms":"Kasih Sayang","en":"Compassion","emoji":"💚"},"KETENANGAN":{"ms":"Ketenangan","en":"Peace of Mind","emoji":"☁️"}},quotes:[{"id":1,"type":"QURAN","arabic":"إِنَّ مَعَ الْعُسْرِ يُسْرًا","ms":"Sesungguhnya bersama kesusahan itu ada kemudahan.","en":"Indeed, with hardship comes ease.","source":"Surah Al-Insyirah, 94:6","themes":["SABAR","KETENANGAN"]},{"id":2,"type":"QURAN","arabic":"وَبَشِّرِ الصَّابِرِينَ","ms":"Dan berilah khabar gembira kepada orang-orang yang sabar.","en":"And give good tidings to the patient.","source":"Surah Al-Baqarah, 2:155","themes":["SABAR"]},{"id":3,"type":"QURAN","arabic":"لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا","ms":"Allah tidak membebani seseorang melainkan menurut kadar kemampuannya.","en":"Allah does not burden a soul beyond what it can bear.","source":"Surah Al-Baqarah, 2:286","themes":["SABAR","KETENANGAN"]},{"id":4,"type":"QURAN","arabic":"وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ","ms":"Dan sesiapa yang bertawakal kepada Allah, maka Allah akan mencukupkan keperluannya.","en":"And whoever relies upon Allah — He is sufficient for him.","source":"Surah At-Talaq, 65:3","themes":["REZEKI","KETENANGAN"]},{"id":5,"type":"QURAN","arabic":"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ","ms":"Ketahuilah, dengan mengingati Allah hati menjadi tenang.","en":"Verily, in the remembrance of Allah do hearts find rest.","source":"Surah Ar-Ra'd, 13:28","themes":["KETENANGAN","DOA"]},{"id":6,"type":"QURAN","arabic":"وَقَالَ رَبُّكُمُ ادْعُونِي أَسْتَجِبْ لَكُمْ","ms":"Dan Tuhan kamu berfirman: Berdoalah kepada-Ku, nescaya Aku perkenankan bagi kamu.","en":"And your Lord says: Call upon Me, and I will respond to you.","source":"Surah Ghafir, 40:60","themes":["DOA"]},{"id":7,"type":"QURAN","arabic":"إِنَّ اللَّهَ مَعَ الصَّابِرِينَ","ms":"Sesungguhnya Allah bersama orang-orang yang sabar.","en":"Indeed, Allah is with the patient.","source":"Surah Al-Baqarah, 2:153","themes":["SABAR"]},{"id":8,"type":"QURAN","arabic":"وَهُوَ مَعَكُمْ أَيْنَ مَا كُنتُمْ","ms":"Dan Dia bersama kamu di mana sahaja kamu berada.","en":"And He is with you wherever you are.","source":"Surah Al-Hadid, 57:4","themes":["KETENANGAN"]},{"id":9,"type":"HADITH","arabic":null,"ms":"Sebaik-baik manusia ialah yang paling bermanfaat kepada manusia lain.","en":"The best of people are those who are most beneficial to others.","source":"Riwayat Ahmad, Ath-Thabrani, Ad-Daruqutni","themes":["KASIH_SAYANG"]},{"id":10,"type":"HADITH","arabic":null,"ms":"Senyummu kepada saudaramu adalah sedekah.","en":"Your smile for your brother is charity.","source":"Riwayat At-Tirmizi","themes":["KASIH_SAYANG"]},{"id":11,"type":"HADITH","arabic":null,"ms":"Barangsiapa yang menempuh jalan menuntut ilmu, Allah akan mudahkan baginya jalan ke syurga.","en":"Whoever takes a path seeking knowledge, Allah makes easy for him a path to Paradise.","source":"Riwayat Muslim","themes":["ILMU"]},{"id":12,"type":"HADITH","arabic":null,"ms":"Orang mukmin yang kuat lebih baik dan lebih dicintai Allah berbanding mukmin yang lemah.","en":"The strong believer is better and more beloved to Allah than the weak believer.","source":"Riwayat Muslim","themes":["SABAR"]},{"id":13,"type":"HADITH","arabic":null,"ms":"Tidak beriman salah seorang kamu sehingga dia mengasihi saudaranya sebagaimana dia mengasihi dirinya sendiri.","en":"None of you truly believes until he loves for his brother what he loves for himself.","source":"Riwayat Bukhari & Muslim","themes":["KASIH_SAYANG"]},{"id":14,"type":"HADITH","arabic":null,"ms":"Amalan yang paling disukai Allah ialah yang berterusan walaupun sedikit.","en":"The most beloved deeds to Allah are those done consistently, even if small.","source":"Riwayat Bukhari & Muslim","themes":["SABAR"]},{"id":15,"type":"HADITH","arabic":null,"ms":"Sesiapa yang beriman kepada Allah dan hari akhirat, hendaklah dia berkata baik atau diam.","en":"Whoever believes in Allah and the Last Day, let him speak good or remain silent.","source":"Riwayat Bukhari & Muslim","themes":["KETENANGAN"]},{"id":16,"type":"QUOTE","arabic":null,"ms":"Jangan bersedih, sesungguhnya Allah bersama kita.","en":"Do not grieve, indeed Allah is with us.","source":"Inspirasi daripada Surah At-Taubah, 9:40","themes":["KETENANGAN"]},{"id":17,"type":"QUOTE","arabic":null,"ms":"Hati yang bersyukur akan sentiasa tenang walau dalam kekurangan.","en":"A grateful heart remains at peace even in scarcity.","source":"Kata Hikmah","themes":["SYUKUR","KETENANGAN"]},{"id":18,"type":"QUOTE","arabic":null,"ms":"Doa adalah senjata orang mukmin.","en":"Prayer is the weapon of the believer.","source":"Kata Hikmah Ulama","themes":["DOA"]},{"id":19,"type":"QUOTE","arabic":null,"ms":"Ilmu tanpa amal ibarat pokok tanpa buah.","en":"Knowledge without action is like a tree without fruit.","source":"Imam Al-Ghazali","themes":["ILMU"]},{"id":20,"type":"QUOTE","arabic":null,"ms":"Kesabaran itu bukan tentang berapa lama kamu boleh menunggu, tetapi bagaimana kamu berkelakuan semasa menunggu.","en":"Patience is not about how long you can wait, but how you behave while waiting.","source":"Kata Hikmah","themes":["SABAR"]},{"id":21,"type":"QURAN","arabic":"وَإِذَا سَأَلَكَ عِبَادِي عَنِّي فَإِنِّي قَرِيبٌ","ms":"Dan apabila hamba-hamba-Ku bertanya kepadamu tentang Aku, maka sesungguhnya Aku sangat dekat.","en":"And when My servants ask you concerning Me, indeed I am near.","source":"Surah Al-Baqarah, 2:186","themes":["DOA","KETENANGAN"]},{"id":22,"type":"QURAN","arabic":"فَاذْكُرُونِي أَذْكُرْكُمْ","ms":"Maka ingatlah kamu kepada-Ku, nescaya Aku ingat pula kepada kamu.","en":"So remember Me; I will remember you.","source":"Surah Al-Baqarah, 2:152","themes":["KETENANGAN"]},{"id":23,"type":"QURAN","arabic":"وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ","ms":"Dan bersabarlah, dan kesabaranmu itu hanya dengan pertolongan Allah.","en":"And be patient, and your patience is not but through Allah.","source":"Surah An-Nahl, 16:127","themes":["SABAR"]},{"id":24,"type":"QURAN","arabic":"وَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَهُوَ خَيْرٌ لَّكُمْ","ms":"Boleh jadi kamu membenci sesuatu padahal ia baik bagi kamu.","en":"But perhaps you hate a thing and it is good for you.","source":"Surah Al-Baqarah, 2:216","themes":["SABAR","KETENANGAN"]},{"id":25,"type":"QURAN","arabic":"وَقُل رَّبِّ زِدْنِي عِلْمًا","ms":"Dan katakanlah: Wahai Tuhanku, tambahkanlah ilmu kepadaku.","en":"And say: My Lord, increase me in knowledge.","source":"Surah Taha, 20:114","themes":["ILMU","DOA"]},{"id":26,"type":"QURAN","arabic":"إِنَّ اللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ","ms":"Sesungguhnya Allah tidak akan mengubah keadaan sesuatu kaum sehingga mereka mengubah keadaan diri mereka sendiri.","en":"Indeed, Allah will not change the condition of a people until they change what is in themselves.","source":"Surah Ar-Ra'd, 13:11","themes":["ILMU"]},{"id":27,"type":"HADITH","arabic":null,"ms":"Keajaiban urusan seorang mukmin, semuanya baik baginya. Jika ditimpa kesenangan dia bersyukur, jika ditimpa kesusahan dia bersabar.","en":"Amazing is the affair of the believer — it is all good for him. If ease befalls him, he is grateful; if hardship befalls him, he is patient.","source":"Riwayat Muslim","themes":["SYUKUR","SABAR"]},{"id":28,"type":"HADITH","arabic":null,"ms":"Sesungguhnya Allah itu Maha Indah dan menyukai keindahan.","en":"Indeed, Allah is beautiful and loves beauty.","source":"Riwayat Muslim","themes":["KETENANGAN"]},{"id":29,"type":"HADITH","arabic":null,"ms":"Bertakwalah kepada Allah di mana sahaja kamu berada, dan iringilah kejahatan dengan kebaikan nescaya ia akan menghapuskannya.","en":"Fear Allah wherever you are, and follow up a bad deed with a good one which will wipe it out.","source":"Riwayat At-Tirmizi","themes":["TAUBAT"]},{"id":30,"type":"HADITH","arabic":null,"ms":"Tiada seorang hamba yang memaafkan melainkan Allah akan menambah kemuliaan baginya.","en":"No one forgives except that Allah increases him in honor.","source":"Riwayat Muslim","themes":["KASIH_SAYANG"]},{"id":31,"type":"HADITH","arabic":null,"ms":"Barangsiapa yang beriman kepada Allah dan hari akhirat, hendaklah dia memuliakan tetamunya.","en":"Whoever believes in Allah and the Last Day should honor his guest.","source":"Riwayat Bukhari & Muslim","themes":["KASIH_SAYANG"]},{"id":32,"type":"QUOTE","arabic":null,"ms":"Redha itu bukan bermaksud kamu tidak berusaha, tetapi kamu tenang selepas berusaha.","en":"Contentment doesn't mean you stop striving — it means you find peace after you've striven.","source":"Kata Hikmah","themes":["KETENANGAN","SABAR"]},{"id":33,"type":"QUOTE","arabic":null,"ms":"Setiap ujian yang Allah beri, ada hikmah yang kita belum nampak lagi.","en":"Every trial Allah gives carries a wisdom we haven't yet come to see.","source":"Kata Hikmah","themes":["SABAR"]},{"id":34,"type":"QUOTE","arabic":null,"ms":"Jangan tunggu sempurna untuk mula berbuat baik — mulakan sekarang, walau kecil.","en":"Don't wait for perfection to start doing good — start now, even if it's small.","source":"Kata Hikmah","themes":["ILMU"]},{"id":35,"type":"QUOTE","arabic":null,"ms":"Solat adalah tempat kita meletakkan segala kegusaran, dan bangkit semula dengan hati yang tenang.","en":"Prayer is where we set down our worries, and rise again with a calm heart.","source":"Kata Hikmah","themes":["DOA","KETENANGAN"]},{"id":36,"type":"QURAN","arabic":"وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا","ms":"Dan orang-orang yang bersungguh-sungguh (berjuang) untuk mencari keredhaan Kami, sesungguhnya Kami akan tunjukkan kepada mereka jalan-jalan Kami.","en":"And those who strive for Us — We will surely guide them to Our ways.","source":"Surah Al-Ankabut, 29:69","themes":["ILMU","SABAR"]},{"id":37,"type":"QURAN","arabic":"رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً","ms":"Wahai Tuhan kami, berikanlah kepada kami kebaikan di dunia dan kebaikan di akhirat.","en":"Our Lord, give us good in this world and good in the Hereafter.","source":"Surah Al-Baqarah, 2:201","themes":["DOA"]},{"id":38,"type":"QURAN","arabic":"وَنَحْنُ أَقْرَبُ إِلَيْهِ مِنْ حَبْلِ الْوَرِيدِ","ms":"Dan Kami lebih dekat kepadanya daripada urat lehernya.","en":"And We are closer to him than his jugular vein.","source":"Surah Qaf, 50:16","themes":["KETENANGAN"]},{"id":39,"type":"QURAN","arabic":"مَن جَاءَ بِالْحَسَنَةِ فَلَهُ عَشْرُ أَمْثَالِهَا","ms":"Sesiapa yang membawa satu kebaikan, maka baginya sepuluh kali ganda pahalanya.","en":"Whoever comes with a good deed will have ten times the like thereof.","source":"Surah Al-An'am, 6:160","themes":["ILMU"]},{"id":40,"type":"QURAN","arabic":"وَافْعَلُوا الْخَيْرَ لَعَلَّكُمْ تُفْلِحُونَ","ms":"Dan lakukanlah kebaikan, mudah-mudahan kamu beroleh kejayaan.","en":"And do good that you may succeed.","source":"Surah Al-Hajj, 22:77","themes":["KASIH_SAYANG"]},{"id":41,"type":"HADITH","arabic":null,"ms":"Dunia ini adalah perhiasan, dan sebaik-baik perhiasan dunia ialah wanita/isteri yang solehah.","en":"The world is but provision, and the best provision of the world is a righteous spouse.","source":"Riwayat Muslim","themes":["KASIH_SAYANG"]},{"id":42,"type":"HADITH","arabic":null,"ms":"Barangsiapa yang meringankan kesusahan seorang mukmin di dunia, Allah akan ringankan kesusahannya di hari akhirat.","en":"Whoever relieves a believer's distress in this world, Allah will relieve his distress on the Day of Resurrection.","source":"Riwayat Muslim","themes":["KASIH_SAYANG","SABAR"]},{"id":43,"type":"HADITH","arabic":null,"ms":"Sedekah tidak akan mengurangkan harta.","en":"Charity does not decrease wealth.","source":"Riwayat Muslim","themes":["REZEKI","SYUKUR"]},{"id":44,"type":"HADITH","arabic":null,"ms":"Barangsiapa yang bertaubat sebelum matahari terbit dari barat, Allah akan menerima taubatnya.","en":"Whoever repents before the sun rises from the west, Allah will accept his repentance.","source":"Riwayat Muslim","themes":["TAUBAT"]},{"id":45,"type":"HADITH","arabic":null,"ms":"Tangan yang di atas (memberi) lebih baik daripada tangan yang di bawah (meminta).","en":"The upper hand (giving) is better than the lower hand (receiving).","source":"Riwayat Bukhari & Muslim","themes":["REZEKI"]},{"id":46,"type":"QUOTE","arabic":null,"ms":"Rezeki bukan sekadar wang, tetapi kesihatan, keluarga, dan hati yang tenang juga rezeki.","en":"Sustenance isn't just money — health, family, and a peaceful heart are also blessings.","source":"Kata Hikmah","themes":["REZEKI","SYUKUR"]},{"id":47,"type":"QUOTE","arabic":null,"ms":"Taubat bukan tanda kelemahan, tetapi tanda keberanian untuk kembali kepada Allah.","en":"Repentance isn't a sign of weakness — it's the courage to return to Allah.","source":"Kata Hikmah","themes":["TAUBAT"]},{"id":48,"type":"QUOTE","arabic":null,"ms":"Ilmu yang bermanfaat adalah ilmu yang membawa kita lebih dekat kepada Allah, bukan sekadar lebih pandai.","en":"Beneficial knowledge is knowledge that brings us closer to Allah, not just knowledge that makes us clever.","source":"Kata Hikmah","themes":["ILMU"]},{"id":49,"type":"QUOTE","arabic":null,"ms":"Kasih sayang yang paling tulus bermula dari hati yang mengingati Allah.","en":"The most sincere compassion begins with a heart that remembers Allah.","source":"Kata Hikmah","themes":["KASIH_SAYANG","KETENANGAN"]},{"id":50,"type":"QUOTE","arabic":null,"ms":"Bersyukur bukan hanya bila senang, tetapi juga bila susah — kerana kedua-duanya ujian.","en":"Gratitude isn't just for ease — it's for hardship too, because both are tests.","source":"Kata Hikmah","themes":["SYUKUR","SABAR"]}],surahs:[{"nama":"Al-Fatihah","namaArab":"الفاتحة","jumlahAyat":7,"arab":"بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ\nالرَّحْمَٰنِ الرَّحِيمِ\nمَالِكِ يَوْمِ الدِّينِ\nإِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ\nاهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ\nصِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ","rumi":"Bismillaahir rahmaanir rahiim. Alhamdu lillaahi rabbil 'aalamiin. Ar-rahmaanir rahiim. Maaliki yaumid diin. Iyyaaka na'budu wa iyyaaka nasta'iin. Ihdinash shiraathal mustaqiim. Shiraathal ladziina an'amta 'alaihim ghairil maghdhuubi 'alaihim wa ladh dhaalliin.","maksud":"Dengan nama Allah Yang Maha Pemurah lagi Maha Mengasihani. Segala puji bagi Allah, Tuhan sekalian alam. Yang Maha Pemurah lagi Maha Mengasihani. Yang menguasai hari pembalasan. Hanya kepada Engkaulah kami menyembah dan hanya kepada Engkaulah kami mohon pertolongan. Tunjukilah kami jalan yang lurus. Iaitu jalan orang-orang yang Engkau kurniakan nikmat kepada mereka, bukan jalan mereka yang dimurkai dan bukan pula jalan mereka yang sesat."},{"nama":"Al-Quraisy","namaArab":"القريش","jumlahAyat":4,"arab":"لِإِيلَافِ قُرَيْشٍ\nإِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ\nفَلْيَعْبُدُوا رَبَّ هَٰذَا الْبَيْتِ\nالَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ وَآمَنَهُمْ مِنْ خَوْفٍ","rumi":"Li-iilaafi quraisy. Iilaafihim rihlatasy syitaa-i wash shaif. Falya'buduu rabba haadzal bait. Alladzii ath'amahum min juu'iw wa aamanahum min khauf.","maksud":"Kerana kebiasaan (hidup senang) orang Quraisy. Iaitu kebiasaan mereka bermusafir pada musim sejuk dan musim panas. Maka hendaklah mereka menyembah Tuhan Pemilik rumah ini (Kaabah). Yang telah memberi mereka makan menghilangkan lapar dan mengamankan mereka dari ketakutan."},{"nama":"Al-Ma'un","namaArab":"الماعون","jumlahAyat":7,"arab":"أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ\nفَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ\nوَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ\nفَوَيْلٌ لِلْمُصَلِّينَ\nالَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ\nالَّذِينَ هُمْ يُرَاءُونَ\nوَيَمْنَعُونَ الْمَاعُونَ","rumi":"A-ra-aital ladzii yukadzdzibu bid diin. Fadzaalikal ladzii yadu''ul yatiim. Wa laa yahudhdhu 'alaa tha'aamil miskiin. Fawailul lil mushalliin. Alladziina hum 'an shalaatihim saahuun. Alladziina hum yuraa-uun. Wa yamna'uunal maa'uun.","maksud":"Tahukah engkau orang yang mendustakan agama? Itulah orang yang menghardik anak yatim. Dan tidak menganjurkan memberi makan orang miskin. Maka celakalah bagi orang yang solat. Iaitu mereka yang lalai daripada solatnya. Mereka yang berbuat riak. Dan enggan menolong dengan barang berguna."},{"nama":"Al-Kautsar","namaArab":"الكوثر","jumlahAyat":3,"arab":"إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ\nفَصَلِّ لِرَبِّكَ وَانْحَرْ\nإِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ","rumi":"Innaa a'thainaakal kautsar. Fasholli lirabbika wanhar. Inna syaani-aka huwal abtar.","maksud":"Sesungguhnya Kami telah mengurniakan kepadamu nikmat yang banyak (al-Kautsar). Maka dirikanlah solat kerana Tuhanmu, dan berkorbanlah. Sesungguhnya orang yang membencimu, dialah yang terputus (dari rahmat Allah)."},{"nama":"Al-Kafirun","namaArab":"الكافرون","jumlahAyat":6,"arab":"قُلْ يَا أَيُّهَا الْكَافِرُونَ\nلَا أَعْبُدُ مَا تَعْبُدُونَ\nوَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ\nوَلَا أَنَا عَابِدٌ مَا عَبَدْتُمْ\nوَلَا أَنْتُمْ عَابِدُونَ مَا أَعْبُدُ\nلَكُمْ دِينُكُمْ وَلِيَ دِينِ","rumi":"Qul yaa ayyuhal kaafiruun. Laa a'budu maa ta'buduun. Wa laa antum 'aabiduuna maa a'bud. Wa laa anaa 'aabidum maa 'abadtum. Wa laa antum 'aabiduuna maa a'bud. Lakum diinukum wa liya diin.","maksud":"Katakanlah: Wahai orang-orang kafir. Aku tidak akan menyembah apa yang kamu sembah. Dan kamu bukanlah penyembah apa yang aku sembah. Dan aku tidak pernah menjadi penyembah apa yang kamu sembah. Dan kamu tidak pernah pula menjadi penyembah apa yang aku sembah. Untuk kamu agama kamu, dan untukku agamaku."},{"nama":"An-Nasr","namaArab":"النصر","jumlahAyat":3,"arab":"إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ\nوَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا\nفَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ إِنَّهُ كَانَ تَوَّابًا","rumi":"Idzaa jaa-a nashrullaahi wal fath. Wa ra-aitan naasa yadkhuluuna fii diinillaahi afwaajaa. Fasabbih bihamdi rabbika wastaghfirh, innahu kaana tawwaabaa.","maksud":"Apabila telah datang pertolongan Allah dan kemenangan. Dan engkau lihat manusia masuk ke dalam agama Allah dengan berpuak-puak. Maka bertasbihlah dengan memuji Tuhanmu dan mintalah ampun kepada-Nya. Sesungguhnya Dia Maha Penerima taubat."},{"nama":"Al-Lahab","namaArab":"المسد","jumlahAyat":5,"arab":"تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ\nمَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ\nسَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ\nوَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ\nفِي جِيدِهَا حَبْلٌ مِنْ مَسَدٍ","rumi":"Tabbat yadaa abii lahabiw watabb. Maa aghnaa 'anhu maaluhuu wa maa kasab. Sayashlaa naaran dzaata lahab. Wamra-atuhu hammaalatal hathab. Fii jiidihaa hablum mim masad.","maksud":"Binasalah kedua-dua tangan Abu Lahab dan binasalah dia. Tidaklah berguna baginya harta dan apa yang diusahakannya. Dia akan memasuki api yang bergejolak. Dan begitu juga isterinya, pembawa kayu bakar. Di lehernya ada tali dari sabut."},{"nama":"Al-Ikhlas","namaArab":"الإخلاص","jumlahAyat":4,"arab":"قُلْ هُوَ اللَّهُ أَحَدٌ\nاللَّهُ الصَّمَدُ\nلَمْ يَلِدْ وَلَمْ يُولَدْ\nوَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ","rumi":"Qul huwallaahu ahad. Allaahush shamad. Lam yalid wa lam yuulad. Wa lam yakul lahuu kufuwan ahad.","maksud":"Katakanlah: Dialah Allah, Yang Maha Esa. Allah tempat bergantung segala sesuatu. Dia tiada beranak dan tidak pula diperanakkan. Dan tidak ada sesuatu yang setara dengan Dia."},{"nama":"Al-Falaq","namaArab":"الفلق","jumlahAyat":5,"arab":"قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ\nمِنْ شَرِّ مَا خَلَقَ\nوَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ\nوَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ\nوَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ","rumi":"Qul a'uudzu birabbil falaq. Min syarri maa khalaq. Wa min syarri ghaasiqin idzaa waqab. Wa min syarrin naffaatsaati fil 'uqad. Wa min syarri haasidin idzaa hasad.","maksud":"Katakanlah: Aku berlindung kepada Tuhan yang menguasai waktu subuh. Dari kejahatan makhluk yang Dia ciptakan. Dan dari kejahatan malam apabila gelap gelita. Dan dari kejahatan wanita-wanita tukang sihir yang menghembus pada buhul-buhul. Dan dari kejahatan orang yang dengki apabila dia dengki."},{"nama":"An-Nas","namaArab":"الناس","jumlahAyat":6,"arab":"قُلْ أَعُوذُ بِرَبِّ النَّاسِ\nمَلِكِ النَّاسِ\nإِلَٰهِ النَّاسِ\nمِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ\nالَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ\nمِنَ الْجِنَّةِ وَالنَّاسِ","rumi":"Qul a'uudzu birabbin naas. Malikin naas. Ilaahin naas. Min syarril waswaasil khannaas. Alladzii yuwaswisu fii shuduurin naas. Minal jinnati wan naas.","maksud":"Katakanlah: Aku berlindung kepada Tuhan manusia. Raja manusia. Sembahan manusia. Dari kejahatan bisikan syaitan yang bersembunyi. Yang membisikkan kejahatan ke dalam dada manusia. Dari golongan jin dan manusia."}],zikirPagi:[{"title":"Ayat Kursi","arab":"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ","rumi":"Allaahu laa ilaaha illaa huwal hayyul qayyuum, laa ta'khudzuhuu sinatuw wa laa naum, lahuu maa fis samaawaati wa maa fil ardh. Man dzal ladzii yasyfa'u 'indahuu illaa bi-idznih. Ya'lamu maa baina aidiihim wa maa khalfahum, wa laa yuhiithuuna bisyai-im min 'ilmihii illaa bimaa syaa-a. Wasi'a kursiyyuhus samaawaati wal ardh, wa laa ya-uuduhuu hifzhuhumaa wa huwal 'aliyyul 'azhiim.","maksud":"Allah, tiada Tuhan yang berhak disembah melainkan Dia, Yang Hidup kekal lagi terus-menerus mengurus makhluk-Nya. Tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang di hadapan dan di belakang mereka. Kursi-Nya meliputi langit dan bumi, dan Dia tidak berat memelihara keduanya. Dan Dia Maha Tinggi lagi Maha Besar.","bilangan":null},{"title":"Al-Ikhlas, Al-Falaq & An-Nas","arab":"","rumi":"","maksud":"Baca Surah Al-Ikhlas, Al-Falaq dan An-Nas — rujuk teks penuh di tab Surah.","bilangan":"3 kali setiap satu"},{"title":"Doa Pagi","arab":"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ","rumi":"Ashbahnaa wa ashbahal mulku lillaah, walhamdu lillaah, laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa 'alaa kulli syai-in qadiir.","maksud":"Kami telah memasuki waktu pagi dan kerajaan hanya milik Allah, segala puji bagi Allah. Tiada Tuhan yang berhak disembah melainkan Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji, dan Dia Maha Berkuasa atas segala sesuatu.","bilangan":null},{"title":"Sayyidul Istighfar (Penghulu Istighfar)","arab":"اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ","rumi":"Allaahumma anta rabbii laa ilaaha illaa anta, khalaqtanii wa ana 'abduka, wa ana 'alaa 'ahdika wa wa'dika mas tatha'tu, a'uudzu bika min syarri maa shana'tu, abuu-u laka bini'matika 'alayya, wa abuu-u bidzanbii faghfirlii fa-innahu laa yaghfirudz dzunuuba illaa anta.","maksud":"Ya Allah, Engkau Tuhanku, tiada Tuhan yang berhak disembah melainkan Engkau. Engkau menciptakanku dan aku hamba-Mu. Aku akan setia pada perjanjian dan janjiku pada-Mu semampuku. Aku berlindung kepada-Mu dari kejahatan yang telah aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, maka ampunilah aku, sesungguhnya tiada yang mengampuni dosa melainkan Engkau.","bilangan":null},{"title":"Perlindungan (Hasbiyallah)","arab":"حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ","rumi":"Hasbiyallaahu laa ilaaha illaa huwa 'alaihi tawakkaltu wa huwa rabbul 'arsyil 'azhiim.","maksud":"Cukuplah Allah bagiku, tiada Tuhan yang berhak disembah melainkan Dia. Kepada-Nya aku bertawakal, dan Dia Tuhan pemilik Arasy yang agung.","bilangan":"7 kali"},{"title":"Perlindungan Bismillah","arab":"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ","rumi":"Bismillaahil ladzii laa yadhurru ma'asmihii syai-un fil ardhi wa laa fis samaa-i wa huwas samii'ul 'aliim.","maksud":"Dengan nama Allah yang dengan nama-Nya tiada sesuatu pun di bumi dan di langit yang dapat memberi mudarat, dan Dia Maha Mendengar lagi Maha Mengetahui.","bilangan":"3 kali"},{"title":"Redha Dengan Allah","arab":"رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا","rumi":"Radhiitu billaahi rabbaa, wa bil islaami diinaa, wa bimuhammadin shallallaahu 'alaihi wasallama nabiyyaa.","maksud":"Aku redha Allah sebagai Tuhanku, Islam sebagai agamaku, dan Muhammad ﷺ sebagai Nabiku.","bilangan":"3 kali"}],zikirPetang:[{"title":"Ayat Kursi","arab":"اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ","rumi":"Allaahu laa ilaaha illaa huwal hayyul qayyuum, laa ta'khudzuhuu sinatuw wa laa naum, lahuu maa fis samaawaati wa maa fil ardh. Man dzal ladzii yasyfa'u 'indahuu illaa bi-idznih. Ya'lamu maa baina aidiihim wa maa khalfahum, wa laa yuhiithuuna bisyai-im min 'ilmihii illaa bimaa syaa-a. Wasi'a kursiyyuhus samaawaati wal ardh, wa laa ya-uuduhuu hifzhuhumaa wa huwal 'aliyyul 'azhiim.","maksud":"Allah, tiada Tuhan yang berhak disembah melainkan Dia, Yang Hidup kekal lagi terus-menerus mengurus makhluk-Nya. Tidak mengantuk dan tidak tidur. Kepunyaan-Nya apa yang di langit dan di bumi. Tiada yang dapat memberi syafaat di sisi-Nya tanpa izin-Nya. Dia mengetahui apa yang di hadapan dan di belakang mereka. Kursi-Nya meliputi langit dan bumi, dan Dia tidak berat memelihara keduanya. Dan Dia Maha Tinggi lagi Maha Besar.","bilangan":null},{"title":"Al-Ikhlas, Al-Falaq & An-Nas","arab":"","rumi":"","maksud":"Baca Surah Al-Ikhlas, Al-Falaq dan An-Nas — rujuk teks penuh di tab Surah.","bilangan":"3 kali setiap satu"},{"title":"Doa Petang","arab":"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ","rumi":"Amsainaa wa amsal mulku lillaah, walhamdu lillaah, laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa 'alaa kulli syai-in qadiir.","maksud":"Kami telah memasuki waktu petang dan kerajaan hanya milik Allah, segala puji bagi Allah. Tiada Tuhan yang berhak disembah melainkan Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji, dan Dia Maha Berkuasa atas segala sesuatu.","bilangan":null},{"title":"Sayyidul Istighfar (Penghulu Istighfar)","arab":"اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَٰهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَىٰ عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ","rumi":"Allaahumma anta rabbii laa ilaaha illaa anta, khalaqtanii wa ana 'abduka, wa ana 'alaa 'ahdika wa wa'dika mas tatha'tu, a'uudzu bika min syarri maa shana'tu, abuu-u laka bini'matika 'alayya, wa abuu-u bidzanbii faghfirlii fa-innahu laa yaghfirudz dzunuuba illaa anta.","maksud":"Ya Allah, Engkau Tuhanku, tiada Tuhan yang berhak disembah melainkan Engkau. Engkau menciptakanku dan aku hamba-Mu. Aku akan setia pada perjanjian dan janjiku pada-Mu semampuku. Aku berlindung kepada-Mu dari kejahatan yang telah aku perbuat. Aku mengakui nikmat-Mu kepadaku dan aku mengakui dosaku, maka ampunilah aku, sesungguhnya tiada yang mengampuni dosa melainkan Engkau.","bilangan":null},{"title":"Perlindungan (Hasbiyallah)","arab":"حَسْبِيَ اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ","rumi":"Hasbiyallaahu laa ilaaha illaa huwa 'alaihi tawakkaltu wa huwa rabbul 'arsyil 'azhiim.","maksud":"Cukuplah Allah bagiku, tiada Tuhan yang berhak disembah melainkan Dia. Kepada-Nya aku bertawakal, dan Dia Tuhan pemilik Arasy yang agung.","bilangan":"7 kali"},{"title":"Perlindungan Bismillah","arab":"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ","rumi":"Bismillaahil ladzii laa yadhurru ma'asmihii syai-un fil ardhi wa laa fis samaa-i wa huwas samii'ul 'aliim.","maksud":"Dengan nama Allah yang dengan nama-Nya tiada sesuatu pun di bumi dan di langit yang dapat memberi mudarat, dan Dia Maha Mendengar lagi Maha Mengetahui.","bilangan":"3 kali"},{"title":"Redha Dengan Allah","arab":"رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا","rumi":"Radhiitu billaahi rabbaa, wa bil islaami diinaa, wa bimuhammadin shallallaahu 'alaihi wasallama nabiyyaa.","maksud":"Aku redha Allah sebagai Tuhanku, Islam sebagai agamaku, dan Muhammad ﷺ sebagai Nabiku.","bilangan":"3 kali"}],guide:{niat:[{"waktu":"Subuh","arab":"أُصَلِّي فَرْضَ الصُّبْحِ رَكْعَتَيْنِ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى","rumi":"Usholli fardhash shubhi rok'ataini mustaqbilal qiblati adaa-al lillaahi ta'aalaa","maksud":"Sahaja aku solat fardu Subuh dua rakaat menghadap kiblat kerana Allah Ta'ala."},{"waktu":"Zohor","arab":"أُصَلِّي فَرْضَ الظُّهْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى","rumi":"Usholli fardhaz zhuhri arba'a raka'aatim mustaqbilal qiblati adaa-al lillaahi ta'aalaa","maksud":"Sahaja aku solat fardu Zohor empat rakaat menghadap kiblat kerana Allah Ta'ala."},{"waktu":"Asar","arab":"أُصَلِّي فَرْضَ الْعَصْرِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى","rumi":"Usholli fardhal 'ashri arba'a raka'aatim mustaqbilal qiblati adaa-al lillaahi ta'aalaa","maksud":"Sahaja aku solat fardu Asar empat rakaat menghadap kiblat kerana Allah Ta'ala."},{"waktu":"Maghrib","arab":"أُصَلِّي فَرْضَ الْمَغْرِبِ ثَلاَثَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى","rumi":"Usholli fardhal maghribi tsalaatsa raka'aatim mustaqbilal qiblati adaa-al lillaahi ta'aalaa","maksud":"Sahaja aku solat fardu Maghrib tiga rakaat menghadap kiblat kerana Allah Ta'ala."},{"waktu":"Isyak","arab":"أُصَلِّي فَرْضَ الْعِشَاءِ أَرْبَعَ رَكَعَاتٍ مُسْتَقْبِلَ الْقِبْلَةِ أَدَاءً لِلَّهِ تَعَالَى","rumi":"Usholli fardhal 'isyaaa-i arba'a raka'aatim mustaqbilal qiblati adaa-al lillaahi ta'aalaa","maksud":"Sahaja aku solat fardu Isyak empat rakaat menghadap kiblat kerana Allah Ta'ala."}],rukun:[{"title":"Niat","desc":"Diletakkan di dalam hati, disertai dengan takbiratul ihram. (Lihat senarai niat 5 waktu di atas)"},{"title":"Berdiri betul (jika mampu)","desc":"Solat fardu wajib berdiri jika berkemampuan; jika tidak mampu, boleh duduk atau baring ikut keupayaan."},{"title":"Takbiratul Ihram","desc":"Mengangkat kedua tangan sambil menyebut takbir untuk memulakan solat.","arab":"اللَّهُ أَكْبَرُ","rumi":"Allaahu Akbar"},{"title":"Membaca Al-Fatihah","desc":"Wajib dibaca pada setiap rakaat (rujuk tab Al-Quran untuk teks penuh Al-Fatihah)."},{"title":"Rukuk","desc":"Membongkokkan badan dengan tenang (thoma'ninah), tangan memegang lutut. Dibaca 3 kali.","arab":"سُبْحَانَ رَبِّيَ الْعَظِيمِ وَبِحَمْدِهِ","rumi":"Subhaana rabbiyal 'azhiimi wabihamdih"},{"title":"I'tidal","desc":"Bangun tegak semula selepas rukuk, dengan tenang.","arab":"سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ، رَبَّنَا لَكَ الْحَمْدُ مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ","rumi":"Sami'allaahu liman hamidah. Rabbanaa lakal hamdu mil'us samaawaati wa mil'ul ardh"},{"title":"Sujud (dua kali setiap rakaat)","desc":"Tujuh anggota menyentuh lantai: dahi, dua tapak tangan, dua lutut, dua hujung kaki. Dibaca 3 kali.","arab":"سُبْحَانَ رَبِّيَ الْأَعْلَى وَبِحَمْدِهِ","rumi":"Subhaana rabbiyal a'laa wabihamdih"},{"title":"Duduk antara dua sujud","desc":"Duduk dengan tenang sebelum sujud kedua.","arab":"رَبِّ اغْفِرْ لِي وَارْحَمْنِي وَاجْبُرْنِي وَارْفَعْنِي وَارْزُقْنِي وَاهْدِنِي وَعَافِنِي وَاعْفُ عَنِّي","rumi":"Rabbighfirlii warhamnii wajburnii warfa'nii warzuqnii wahdinii wa'aafinii wa'fu 'annii"},{"title":"Duduk tahiyyat akhir","desc":"Duduk untuk membaca tahiyyat sebelum salam.","arab":"التَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلَّهِ، السَّلاَمُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلاَمُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ","rumi":"Attahiyyaatul mubaarakaatush sholawaatuth thoyyibaatu lillaah. Assalaamu 'alaika ayyuhan nabiyyu wa rahmatullaahi wa barakaatuh. Assalaamu 'alainaa wa'alaa 'ibaadillaahish shoolihiin. Asyhadu allaa ilaaha illallaah wa asyhadu anna muhammadar rasuulullaah"},{"title":"Membaca selawat","desc":"Termasuk selawat ke atas Nabi Muhammad ﷺ, dibaca selepas tahiyyat akhir.","arab":"اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ","rumi":"Allaahumma sholli 'alaa sayyidinaa Muhammad wa'alaa aali sayyidinaa Muhammad"},{"title":"Memberi salam","desc":"Menoleh ke kanan dan kiri sambil mengucap salam untuk menamatkan solat.","arab":"السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ","rumi":"Assalaamu 'alaikum warahmatullaah"},{"title":"Tertib","desc":"Melakukan setiap rukun mengikut susunan yang betul, tidak boleh terbalik."}],sunnahAbadh:[{"title":"Tahiyyat Awal","desc":"Dibaca selepas rakaat kedua bagi solat yang lebih daripada 2 rakaat (Zohor, Asar, Isyak: rakaat ke-2; Maghrib: rakaat ke-2), sebelum bangun ke rakaat seterusnya. Bacaan lebih pendek — tanpa selawat ke atas keluarga Nabi.","arab":"التَّحِيَّاتُ الْمُبَارَكَاتُ الصَّلَوَاتُ الطَّيِّبَاتُ لِلَّهِ، السَّلاَمُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلاَمُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ","rumi":"Attahiyyaatul mubaarakaatush sholawaatuth thoyyibaatu lillaah. Assalaamu 'alaika ayyuhan nabiyyu wa rahmatullaahi wa barakaatuh. Assalaamu 'alainaa wa'alaa 'ibaadillaahish shoolihiin. Asyhadu allaa ilaaha illallaah wa asyhadu anna muhammadar rasuulullaah. Allaahumma sholli 'alaa sayyidinaa Muhammad"}],doaSelepasSolat:[{"title":"Istighfar","arab":"أَسْتَغْفِرُ اللَّهَ","rumi":"Astaghfirullaah","maksud":"Aku memohon ampun kepada Allah.","bilangan":"3 kali"},{"title":"Doa Kesejahteraan","arab":"اللَّهُمَّ أَنْتَ السَّلاَمُ وَمِنْكَ السَّلاَمُ تَبَارَكْتَ يَا ذَا الْجَلاَلِ وَالْإِكْرَامِ","rumi":"Allaahumma antas salaam wa minkas salaam tabaarakta yaa dzal jalaali wal ikraam","maksud":"Ya Allah, Engkaulah punca kesejahteraan, dan daripada-Mu datangnya kesejahteraan. Maha Suci Engkau, wahai Tuhan Yang Memiliki Kebesaran dan Kemuliaan.","bilangan":null},{"title":"Tasbih","arab":"سُبْحَانَ اللَّهِ","rumi":"Subhaanallaah","maksud":"Maha Suci Allah.","bilangan":"33 kali"},{"title":"Tahmid","arab":"الْحَمْدُ لِلَّهِ","rumi":"Alhamdulillaah","maksud":"Segala puji bagi Allah.","bilangan":"33 kali"},{"title":"Takbir","arab":"اللَّهُ أَكْبَرُ","rumi":"Allaahu Akbar","maksud":"Allah Maha Besar.","bilangan":"34 kali (genap 100 dengan tasbih & tahmid di atas)"},{"title":"Penutup (Tahlil)","arab":"لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ","rumi":"Laa ilaaha illallaahu wahdahu laa syariika lah, lahul mulku wa lahul hamdu wa huwa 'alaa kulli syai-in qadiir","maksud":"Tiada Tuhan yang berhak disembah melainkan Allah Yang Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan bagi-Nya segala puji, dan Dia Maha Berkuasa atas segala sesuatu.","bilangan":null}],perbezaan:[{"aspek":"Aurat semasa solat","lelaki":"Pusat hingga lutut.","perempuan":"Seluruh tubuh kecuali muka dan tapak tangan (ikut jumhur ulama)."},{"aspek":"Posisi tangan bersedekap","lelaki":"Diletakkan agak jauh dari dada.","perempuan":"Diletakkan lebih rapat ke dada."},{"aspek":"Semasa rukuk","lelaki":"Merenggangkan siku daripada badan.","perempuan":"Merapatkan anggota badan (lebih tertutup)."},{"aspek":"Semasa sujud","lelaki":"Mengangkat perut daripada peha, siku diangkat dari lantai.","perempuan":"Merapatkan tubuh — perut ke peha, lebih menutup bentuk badan."},{"aspek":"Bacaan pada solat jahar (Subuh, Maghrib, Isyak)","lelaki":"Disunatkan membaca dengan kuat jika menjadi imam.","perempuan":"Disunatkan membaca perlahan, terutama jika ada lelaki bukan mahram berdekatan."},{"aspek":"Cara duduk","lelaki":"Iftirasy/tawarruk seperti biasa.","perempuan":"Sama, namun turut disunatkan duduk dengan cara yang lebih menutup aurat (kaki dirapatkan ke sisi)."}]}};
+</script>
+<script>
+
+const I18N = {
+  MS: {
+    home:"Utama", categories:"Kategori", categoriesShort:"Kategori", prayerTimes:"Waktu Solat",
+    prayerShort:"Solat", guide:"Panduan Solat", guideShort:"Panduan", favorites:"Kegemaran",
+    favShort:"Kegemaran", settings:"Tetapan", nextQuote:"Ayat / Quote Seterusnya",
+    nextPrayer:"Solat seterusnya", yourLocation:"Lokasi anda", useLocation:"Guna lokasi saya",
+    language:"Bahasa", textSize:"Saiz teks", savedLocation:"Lokasi waktu solat", change:"Tukar",
+    offline:"Mod Offline", notifications:"Notifikasi"
+  },
+  EN: {
+    home:"Home", categories:"Categories", categoriesShort:"Categories", prayerTimes:"Prayer Times",
+    prayerShort:"Prayer", guide:"Prayer Guide", guideShort:"Guide", favorites:"Favorites",
+    favShort:"Favorites", settings:"Settings", nextQuote:"Next Verse / Quote",
+    nextPrayer:"Next prayer", yourLocation:"Your location", useLocation:"Use my location",
+    language:"Language", textSize:"Text size", savedLocation:"Prayer location", change:"Change",
+    offline:"Offline Mode", notifications:"Notifications"
+  }
+};
+
+let language = localStorage.getItem("rmLanguage") || "MS";
+let currentRoute = "home";
+let activeTheme = null;
+let currentQuoteId = Number(localStorage.getItem("rmCurrentQuote")) || 1;
+let favorites = new Set(JSON.parse(localStorage.getItem("rmFavorites") || "[]"));
+let textScale = Number(localStorage.getItem("reminderTextScale") || 1);
+let tasbihTarget = Number(localStorage.getItem("tasbihTarget") || 33);
+let tasbihCount = Number(localStorage.getItem("tasbihCount") || 0);
+let prayerCache = JSON.parse(localStorage.getItem("prayerCacheV4") || "null");
+let nextPrayerAt = null;
+let countdownTimer = null;
+
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+function breaks(v){ return esc(v).replaceAll("\n","<br>"); }
+
+function tr(key){ return I18N[language][key] || key; }
+
+function applyLanguage(){
+  document.documentElement.lang = language === "MS" ? "ms" : "en";
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const key = el.dataset.i18n;
+    if (I18N[language][key]) el.textContent = I18N[language][key];
+  });
+  document.getElementById("langQuick").textContent = language;
+  document.getElementById("settingsLang").textContent = language;
+  renderHome();
+  renderCategories();
+  renderFavorites();
+  renderPrayerListFromCache();
+}
+function toggleLanguage(){
+  language = language === "MS" ? "EN" : "MS";
+  localStorage.setItem("rmLanguage", language);
+  applyLanguage();
+  toast(language === "MS" ? "Bahasa Melayu dipilih" : "English selected");
+}
+
+function navigate(route){
+  currentRoute = route;
+  document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
+  const target = document.getElementById("screen-"+route);
+  if(target) target.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("active",x.dataset.route===route));
+  if(route==="favorites") renderFavorites();
+  if(route==="prayer") renderPrayerListFromCache();
+  if(route==="settings") updateSettings();
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function quotePool(){
+  if(!activeTheme) return RM_DATA.quotes;
+  const p = RM_DATA.quotes.filter(q=>q.themes.includes(activeTheme));
+  return p.length ? p : RM_DATA.quotes;
+}
+function currentQuote(){
+  return RM_DATA.quotes.find(q=>q.id===currentQuoteId) || RM_DATA.quotes[0];
+}
+function quoteTypeLabel(type){
+  if(type==="QURAN") return language==="MS" ? "AYAT AL-QURAN" : "QURAN VERSE";
+  if(type==="HADITH") return language==="MS" ? "HADIS" : "HADITH";
+  return language==="MS" ? "KATA HIKMAH" : "WISDOM";
+}
+function quoteGradient(id){
+  const gradients=[
+    "linear-gradient(150deg,#527b65,#173c30)",
+    "linear-gradient(150deg,#6d8063,#233f35)",
+    "linear-gradient(150deg,#4d7275,#15383a)",
+    "linear-gradient(150deg,#806d55,#3c3024)",
+    "linear-gradient(150deg,#65738b,#273345)"
+  ];
+  return gradients[id % gradients.length];
+}
+function renderHome(){
+  const q=currentQuote();
+  const favorite=favorites.has(q.id);
+  const text=language==="MS"?q.ms:q.en;
+  const filter=document.getElementById("homeFilter");
+  filter.innerHTML=activeTheme
+    ? `<button class="filter-chip" onclick="clearTheme()">✦ ${esc(RM_DATA.themes[activeTheme][language.toLowerCase()])} ×</button>`
+    : "";
+  document.getElementById("homeQuote").innerHTML=`
+    <article class="quote-card" style="background:${quoteGradient(q.id)}">
+      <div class="quote-inner">
+        <span class="quote-type">${quoteTypeLabel(q.type)}</span>
+        ${q.arabic?`<div class="quote-arab">${esc(q.arabic)}</div>`:""}
+        <div class="quote-text">${esc(text)}</div>
+        <div class="quote-source">— ${esc(q.source)}</div>
+        <div class="quote-buttons">
+          <button class="round" onclick="toggleFavorite(${q.id})" aria-label="favorite">${favorite?"♥":"♡"}</button>
+          <button class="round" onclick="shareQuote(${q.id})" aria-label="share">↗</button>
+        </div>
+      </div>
+    </article>`;
+}
+function nextQuote(){
+  const pool=quotePool().filter(q=>q.id!==currentQuoteId);
+  const next=pool[Math.floor(Math.random()*pool.length)] || quotePool()[0];
+  currentQuoteId=next.id;
+  localStorage.setItem("rmCurrentQuote",currentQuoteId);
+  renderHome();
+}
+function selectTheme(theme){
+  activeTheme=theme;
+  const pool=quotePool();
+  currentQuoteId=pool[Math.floor(Math.random()*pool.length)].id;
+  localStorage.setItem("rmCurrentQuote",currentQuoteId);
+  navigate("home");
+  renderHome();
+}
+function clearTheme(){ activeTheme=null; nextQuote(); renderHome(); }
+
+function renderCategories(){
+  const grid=document.getElementById("categoryGrid");
+  grid.innerHTML=Object.entries(RM_DATA.themes).map(([key,t])=>{
+    const count=RM_DATA.quotes.filter(q=>q.themes.includes(key)).length;
+    return `<button class="category" onclick="selectTheme('${key}')">
+      <div class="emoji">${t.emoji}</div>
+      <div><strong>${esc(t[language.toLowerCase()])}</strong><br><span>${count} ${language==="MS"?"item":"items"}</span></div>
+    </button>`;
+  }).join("");
+}
+
+function saveFavorites(){
+  localStorage.setItem("rmFavorites",JSON.stringify([...favorites]));
+}
+function toggleFavorite(id){
+  if(favorites.has(id)){ favorites.delete(id); toast(language==="MS"?"Dibuang dari kegemaran":"Removed from favorites"); }
+  else { favorites.add(id); toast(language==="MS"?"Disimpan ke kegemaran":"Saved to favorites"); }
+  saveFavorites(); renderHome(); renderFavorites();
+}
+function renderFavorites(){
+  const el=document.getElementById("favoritesList");
+  const items=RM_DATA.quotes.filter(q=>favorites.has(q.id));
+  if(!items.length){
+    el.innerHTML=`<div class="empty">${language==="MS"?"Belum ada ayat/quote disimpan.<br>Tap ♡ pada halaman Utama untuk simpan.":"No saved verses/quotes yet.<br>Tap ♡ on Home to save one."}</div>`;
+    return;
+  }
+  el.innerHTML=items.map(q=>`<div class="card fav-card">
+    <button class="fav-remove" onclick="toggleFavorite(${q.id})">×</button>
+    ${q.arabic?`<div class="arabic">${esc(q.arabic)}</div>`:""}
+    <div class="meaning">${esc(language==="MS"?q.ms:q.en)}</div>
+    <div class="small muted" style="margin-top:8px">— ${esc(q.source)}</div>
+  </div>`).join("");
+}
+async function shareQuote(id){
+  const q=RM_DATA.quotes.find(x=>x.id===id);
+  const body=`${language==="MS"?q.ms:q.en}\n\n— ${q.source}\n\nReminderMuslim`;
+  try{
+    if(navigator.share) await navigator.share({title:"ReminderMuslim",text:body});
+    else { await navigator.clipboard.writeText(body); toast(language==="MS"?"Teks disalin":"Text copied"); }
+  }catch(e){}
+}
+
+/* Quran + Zikir */
+function renderQuran(){
+  document.getElementById("surahList").innerHTML=RM_DATA.surahs.map((s,i)=>`
+    <article class="accordion" id="surah-${i}">
+      <button class="accordion-head" onclick="toggleAccordion('surah-${i}')">
+        <div>${esc(s.nama)} <span class="small muted">(${esc(s.namaArab)}) • ${s.jumlahAyat} ayat</span></div><span class="arrow">⌄</span>
+      </button>
+      <div class="accordion-body">
+        <div class="arabic">${breaks(s.arab)}</div>
+        <div class="rumi">${esc(s.rumi)}</div>
+        <div class="meaning">${esc(s.maksud)}</div>
+      </div>
+    </article>`).join("");
+  renderZikir(RM_DATA.zikirPagi,"zikirPagi");
+  renderZikir(RM_DATA.zikirPetang,"zikirPetang");
+}
+function renderZikir(list,id){
+  document.getElementById(id).innerHTML=list.map(z=>`<article class="card">
+    <div class="zikir-title"><span>${esc(z.title)}</span>${z.bilangan?`<span class="badge">${esc(z.bilangan)}</span>`:""}</div>
+    ${z.arab?`<div class="arabic">${breaks(z.arab)}</div><div class="rumi">${esc(z.rumi)}</div>`:""}
+    <div class="meaning">${esc(z.maksud)}</div>
+  </article>`).join("");
+}
+function toggleAccordion(id){ document.getElementById(id)?.classList.toggle("open"); }
+function openQuranTab(name,button){
+  document.querySelectorAll("#screen-quran .subpanel").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll("#screen-quran .subtab").forEach(x=>x.classList.remove("active"));
+  document.getElementById("q-"+name).classList.add("active"); button.classList.add("active");
+}
+function applyTextScale(){
+  document.documentElement.style.setProperty("--scale",textScale);
+}
+function changeText(direction){
+  textScale=Math.max(.8,Math.min(1.5,Math.round((textScale+direction*.1)*10)/10));
+  localStorage.setItem("reminderTextScale",textScale); applyTextScale();
+  toast(`${Math.round(textScale*100)}%`);
+}
+
+/* Tasbih */
+function updateTasbih(){
+  document.getElementById("counter").textContent=tasbihCount;
+  document.getElementById("targetLabel").textContent=(language==="MS"?"Sasaran: ":"Target: ")+tasbihTarget;
+  document.querySelectorAll(".preset").forEach(x=>x.classList.toggle("active",Number(x.dataset.target)===tasbihTarget));
+}
+function setTarget(n){tasbihTarget=n;tasbihCount=0;localStorage.setItem("tasbihTarget",n);localStorage.setItem("tasbihCount",0);updateTasbih();}
+function countTasbih(){
+  tasbihCount++;
+  if(navigator.vibrate) navigator.vibrate(20);
+  if(tasbihCount>=tasbihTarget){
+    document.getElementById("tasbihDone").textContent=language==="MS"?"✓ Alhamdulillah, sasaran selesai":"✓ Alhamdulillah, target complete";
+    tasbihCount=0; setTimeout(()=>document.getElementById("tasbihDone").textContent="",1300);
+  }
+  localStorage.setItem("tasbihCount",tasbihCount);updateTasbih();
+}
+function resetTasbih(){tasbihCount=0;localStorage.setItem("tasbihCount",0);document.getElementById("tasbihDone").textContent="";updateTasbih();}
+
+/* Prayer */
+const prayerLabels={
+  MS:{Fajr:"Subuh",Sunrise:"Syuruk",Dhuhr:"Zohor",Asr:"Asar",Maghrib:"Maghrib",Isha:"Isyak"},
+  EN:{Fajr:"Fajr",Sunrise:"Sunrise",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"}
+};
+function cleanTime(v){const m=String(v||"").match(/\d{1,2}:\d{2}/);return m?m[0]:null;}
+function dateForTime(base,time){if(!time)return null;const [h,m]=time.split(":").map(Number);const d=new Date(base);d.setHours(h,m,0,0);return d;}
+function findNext(timings){
+  const now=new Date();
+  for(const key of ["Fajr","Dhuhr","Asr","Maghrib","Isha"]){
+    const t=cleanTime(timings[key]); const d=dateForTime(now,t);
+    if(d>now)return {key,time:t,date:d};
+  }
+  const tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);
+  return {key:"Fajr",time:cleanTime(timings.Fajr),date:dateForTime(tomorrow,cleanTime(timings.Fajr))};
+}
+function setPrayerCache(data,source){
+  prayerCache={timings:data.timings,date:data.date||null,source,fetchedAt:Date.now()};
+  localStorage.setItem("prayerCacheV4",JSON.stringify(prayerCache));
+  renderPrayerListFromCache();
+  updateMiniPrayer();
+}
+function renderPrayerListFromCache(){
+  const el=document.getElementById("prayerList");
+  if(!prayerCache?.timings){el.innerHTML=`<div class="empty">${language==="MS"?"Belum ada waktu solat disimpan.":"No saved prayer times yet."}</div>`;return;}
+  const t=prayerCache.timings;
+  const keys=["Fajr","Sunrise","Dhuhr","Asr","Maghrib","Isha"];
+  el.innerHTML=keys.map(k=>`<div class="prayer-item"><span>${prayerLabels[language][k]}</span><strong>${cleanTime(t[k])||"--:--"}</strong></div>`).join("");
+  const source=prayerCache.source||"";
+  document.getElementById("prayerStatus").textContent=(navigator.onLine?"":"Offline • ")+source;
+}
+async function fetchJson(url){
+  const r=await fetch(url,{cache:"no-store"}); if(!r.ok)throw new Error("HTTP "+r.status);
+  const j=await r.json(); if(j.code!==200||!j.data?.timings)throw new Error("Invalid API response"); return j.data;
+}
+async function loadPrayerByAddress(){
+  const address=document.getElementById("prayerAddress").value.trim();
+  if(!address)return;
+  localStorage.setItem("prayerAddress",address); updateSettings();
+  document.getElementById("prayerStatus").textContent=language==="MS"?"Memuatkan waktu solat...":"Loading prayer times...";
+  try{
+    const data=await fetchJson(`https://api.aladhan.com/v1/timingsByAddress?address=${encodeURIComponent(address)}&method=3`);
+    setPrayerCache(data,address);
+  }catch(e){
+    document.getElementById("prayerStatus").textContent=language==="MS"
+      ?"Gagal dapatkan waktu solat. Semak internet atau nama lokasi."
+      :"Failed to get prayer times. Check internet or location name.";
+    renderPrayerListFromCache();
+  }
+}
+function getCoords(){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation)return reject(new Error("No geolocation"));
+    navigator.geolocation.getCurrentPosition(
+      p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),
+      reject,{enableHighAccuracy:false,timeout:12000,maximumAge:900000}
+    );
+  });
+}
+async function loadPrayerByLocation(silent=false){
+  if(!navigator.onLine){renderPrayerListFromCache();updateMiniPrayer();return;}
+  if(!silent)document.getElementById("prayerStatus").textContent=language==="MS"?"Mendapatkan lokasi...":"Getting location...";
+  try{
+    const c=await getCoords();
+    const data=await fetchJson(`https://api.aladhan.com/v1/timings?latitude=${encodeURIComponent(c.lat)}&longitude=${encodeURIComponent(c.lon)}&method=3`);
+    setPrayerCache(data,language==="MS"?"Lokasi peranti":"Device location");
+  }catch(e){
+    if(!silent) document.getElementById("prayerStatus").textContent=language==="MS"
+      ?"Lokasi tidak tersedia. Guna carian bandar di atas."
+      :"Location unavailable. Use city search above.";
+    renderPrayerListFromCache();updateMiniPrayer();
+  }
+}
+function updateMiniPrayer(){
+  const name=document.getElementById("miniPrayerName"), time=document.getElementById("miniPrayerTime");
+  const cd=document.getElementById("miniPrayerCountdown");
+  if(!prayerCache?.timings){name.textContent=language==="MS"?"Tidak tersedia":"Unavailable";time.textContent="--:--";cd.textContent=navigator.onLine?"":"Offline";nextPrayerAt=null;return;}
+  const n=findNext(prayerCache.timings);
+  name.textContent=prayerLabels[language][n.key]; time.textContent=n.time; nextPrayerAt=n.date; updateCountdown();
+}
+function updateCountdown(){
+  const el=document.getElementById("miniPrayerCountdown");
+  if(!nextPrayerAt){el.textContent="";return;}
+  let sec=Math.floor((nextPrayerAt-new Date())/1000);
+  if(sec<=0){updateMiniPrayer();return;}
+  const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+  el.textContent=language==="MS"?`Lagi ${h}j ${m}m ${s}s`:`In ${h}h ${m}m ${s}s`;
+}
+
+/* Guide */
+function blockArabic(arab,rumi){
+  return `${arab?`<div class="arabic">${breaks(arab)}</div>`:""}${rumi?`<div class="rumi">${esc(rumi)}</div>`:""}`;
+}
+function renderGuide(){
+  const g=RM_DATA.guide;
+  const niat=g.niat.map(x=>`<article class="accordion"><button class="accordion-head" onclick="this.parentElement.classList.toggle('open')"><span>${esc(x.waktu)}</span><span class="arrow">⌄</span></button><div class="accordion-body">${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(x.maksud)}</div></div></article>`).join("");
+  const rukun=g.rukun.map((x,i)=>`<article class="card"><div><span class="number">${i+1}</span><strong>${esc(x.title)}</strong></div><div class="meaning" style="margin-top:10px">${esc(x.desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`).join("");
+  const sunnah=g.sunnahAbadh.map(x=>`<article class="card"><strong>${esc(x.title)}</strong><div class="meaning" style="margin-top:9px">${esc(x.desc)}</div>${blockArabic(x.arab,x.rumi)}</article>`).join("");
+  const doa=g.doaSelepasSolat.map(x=>`<article class="card"><div class="zikir-title"><span>${esc(x.title)}</span>${x.bilangan?`<span class="badge">${esc(x.bilangan)}</span>`:""}</div>${blockArabic(x.arab,x.rumi)}<div class="meaning">${esc(x.maksud)}</div></article>`).join("");
+  const beza=g.perbezaan.map(x=>`<article class="card"><strong>${esc(x.aspek)}</strong><div class="compare"><div><b>Lelaki:</b> ${esc(x.lelaki)}</div><div><b>Perempuan:</b> ${esc(x.perempuan)}</div></div></article>`).join("");
+  document.getElementById("guideContent").innerHTML=`
+    <div class="guide-section"><div class="guide-heading">Niat Solat Fardu (5 Waktu)</div>${niat}</div>
+    <div class="guide-section"><div class="guide-heading">Rukun Solat</div>${rukun}</div>
+    <div class="guide-section"><div class="guide-heading">Sunnah Ab'adh Dalam Solat</div><div class="small muted" style="margin-bottom:10px">Bukan rukun wajib; jika tertinggal, rujuk panduan sujud sahwi daripada sumber yang dipercayai.</div>${sunnah}</div>
+    <div class="guide-section"><div class="guide-heading">Doa & Zikir Selepas Solat</div>${doa}</div>
+    <div class="guide-section"><div class="guide-heading">Perbezaan Lelaki & Perempuan</div>${beza}</div>`;
+}
+
+/* Settings */
+function updateSettings(){
+  const address=localStorage.getItem("prayerAddress")||"Kuala Lumpur, Malaysia";
+  document.getElementById("settingsLocation").textContent=address;
+  document.getElementById("prayerAddress").value=address;
+  document.getElementById("settingsLang").textContent=language;
+}
+
+/* Toast */
+let toastTimer;
+function toast(text){
+  const el=document.getElementById("toast");el.textContent=text;el.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),1400);
+}
+
+/* Service worker */
+function registerServiceWorker(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.log));
+  }
+}
+
+/* Start */
+function start(){
+  applyTextScale();
+  applyLanguage();
+  renderQuran();
+  renderGuide();
+  updateTasbih();
+  updateSettings();
+  renderPrayerListFromCache();
+  updateMiniPrayer();
+  registerServiceWorker();
+
+  if(!prayerCache && navigator.onLine) loadPrayerByLocation(true);
+  countdownTimer=setInterval(updateCountdown,1000);
+
+  window.addEventListener("online",()=>{ renderPrayerListFromCache(); if(!prayerCache)loadPrayerByLocation(true); });
+  window.addEventListener("offline",()=>{ renderPrayerListFromCache(); updateMiniPrayer(); });
+}
+start();
+
+</script>
+</body>
+</html>
