@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#eef5f1">
+  <meta id="themeColorMeta" name="theme-color" content="#eef5f1">
+  <meta name="color-scheme" content="light dark">
   <title>ReminderMuslim</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -81,9 +82,111 @@
     .nav-btn .nav-icon{display:block;font-size:19px;line-height:22px}.nav-btn.active{background:#285844;color:#fff}
     .toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%) translateY(15px);opacity:0;pointer-events:none;background:#18251f;color:#fff;border-radius:99px;padding:10px 15px;font-size:12px;z-index:100;transition:.2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     @media(max-width:390px){.nav-btn{font-size:8px}.nav-btn .nav-icon{font-size:18px}.page{padding:14px}.quote-card{min-height:430px}}
+  
+    /* ===== ReminderMuslim v1.0 polish ===== */
+    html[data-theme="dark"]{
+      --primary:#8bc6a8;--primary2:#70ae91;--soft:#1d3027;
+      --bg:#0f1713;--surface:#16211b;--text:#f0f5f2;--muted:#9aacA2;
+      --line:#2a3a31;--danger:#e18383;--nav:rgba(11,31,23,.96);
+      --shadow:0 8px 28px rgba(0,0,0,.28);
+    }
+    html[data-theme="dark"] .topbar{
+      background:rgba(15,23,19,.90);border-color:var(--line)
+    }
+    html[data-theme="dark"] .hero{
+      background:linear-gradient(145deg,#19271f,#142019);border-color:#2a3d32
+    }
+    html[data-theme="dark"] .card,
+    html[data-theme="dark"] .category,
+    html[data-theme="dark"] .accordion,
+    html[data-theme="dark"] .preset,
+    html[data-theme="dark"] .prayer-item,
+    html[data-theme="dark"] .field{
+      background:var(--surface);color:var(--text);border-color:var(--line)
+    }
+    html[data-theme="dark"] .compare div{background:#111b16}
+    html[data-theme="dark"] .icon-btn,
+    html[data-theme="dark"] .pill-btn,
+    html[data-theme="dark"] .fav-remove{background:#203128;color:var(--primary)}
+    html[data-theme="dark"] .subtab{background:#223129;color:#c8d4ce}
+    html[data-theme="dark"] .counter{
+      background:radial-gradient(circle at 35% 25%,#22352b,#15231c);
+      box-shadow:0 12px 30px rgba(0,0,0,.30)
+    }
+    html[data-theme="dark"] .disclaimer{background:#1b2620;color:#a9b6af}
+    html[data-theme="dark"] .info{background:#1b3026;color:#b7c9bf}
+    html[data-theme="dark"] .toast{background:#e8f1ec;color:#142019}
+    html[data-theme="dark"] .bottom-nav{
+      border-top-color:rgba(255,255,255,.08)
+    }
+
+    .bottom-nav{
+      background:color-mix(in srgb,var(--nav) 93%,transparent);
+      backdrop-filter:blur(22px) saturate(140%);
+      -webkit-backdrop-filter:blur(22px) saturate(140%);
+      border-top:1px solid rgba(255,255,255,.08);
+      box-shadow:0 -10px 28px rgba(0,0,0,.10)
+    }
+    .nav-btn{transition:background .18s ease,color .18s ease,transform .12s ease}
+    .nav-btn:active{transform:scale(.94)}
+    .nav-btn.active{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+    .topbar{
+      -webkit-backdrop-filter:blur(18px) saturate(135%);
+      box-shadow:0 1px 0 rgba(255,255,255,.35)
+    }
+    .card,.category,.accordion,.prayer-item,.hero{
+      transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease
+    }
+    .category:active,.accordion:active{transform:scale(.985)}
+    .screen.active{animation:rmScreenIn .22s ease-out}
+    @keyframes rmScreenIn{
+      from{opacity:.3;transform:translateY(5px)}
+      to{opacity:1;transform:none}
+    }
+
+    .app-splash{
+      position:fixed;inset:0;z-index:1000;display:grid;place-items:center;
+      background:linear-gradient(160deg,#eef6f1,#dbece3);
+      transition:opacity .35s ease,visibility .35s ease;
+      padding:env(safe-area-inset-top) 20px env(safe-area-inset-bottom)
+    }
+    .app-splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    html[data-theme="dark"] .app-splash{
+      background:linear-gradient(160deg,#132019,#0d1511)
+    }
+    .splash-inner{text-align:center;animation:splashPop .45s ease-out}
+    .splash-icon{
+      width:88px;height:88px;border-radius:24px;object-fit:cover;
+      box-shadow:0 15px 36px rgba(28,76,55,.20)
+    }
+    .splash-title{margin-top:16px;font-size:22px;font-weight:850;color:var(--primary)}
+    .splash-sub{margin-top:5px;font-size:11px;color:var(--muted);letter-spacing:.35px}
+    @keyframes splashPop{
+      from{opacity:0;transform:scale(.92) translateY(6px)}
+      to{opacity:1;transform:none}
+    }
+
+    .version-note{text-align:center;color:var(--muted);font-size:10px;padding:8px 0 2px}
+    .switch{transition:background .2s ease}
+    .switch span{box-shadow:0 1px 3px rgba(0,0,0,.18)}
+    button{touch-action:manipulation}
+
+    @media (prefers-reduced-motion:reduce){
+      *,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    }
+
   </style>
 </head>
 <body>
+
+<div class="app-splash" id="appSplash" aria-hidden="true">
+  <div class="splash-inner">
+    <img class="splash-icon" src="apple-touch-icon.png" alt="">
+    <div class="splash-title">ReminderMuslim</div>
+    <div class="splash-sub">Al-Quran • Zikir • Solat</div>
+  </div>
+</div>
+
 <div class="app">
 
   <section class="screen active" id="screen-home">
@@ -207,6 +310,10 @@
           <div class="actions"><button class="icon-btn" onclick="changeText(-1)">A−</button><button class="icon-btn" onclick="changeText(1)">A+</button></div>
         </div>
         <div class="settings-row">
+          <div><strong data-i18n="darkMode">Mod Gelap</strong><div class="tiny muted" data-i18n="darkDesc">Paparan lebih selesa pada waktu malam.</div></div>
+          <button class="switch" id="darkSwitch" onclick="toggleDarkMode()" aria-label="Toggle dark mode"><span></span></button>
+        </div>
+        <div class="settings-row">
           <div><strong data-i18n="savedLocation">Lokasi waktu solat</strong><div class="tiny muted" id="settingsLocation"></div></div>
           <button class="pill-btn" onclick="navigate('prayer')" data-i18n="change">Tukar</button>
         </div>
@@ -220,6 +327,7 @@
         <p class="small muted" style="line-height:1.6;margin-bottom:0">Versi PWA ini belum menggunakan scheduled local notification seperti Android. Kita kekalkan bahagian ini OFF supaya app stabil; web push boleh ditambah kemudian.</p>
       </div>
       <div class="disclaimer">Sebelum release kepada umum, semak semula terjemahan Quran, teks zikir/hadis dan panduan solat dengan sumber rasmi atau individu berautoriti.</div>
+      <div class="version-note">ReminderMuslim PWA • v1.0</div>
     </div>
   </section>
 
@@ -249,7 +357,7 @@ const I18N = {
     favShort:"Kegemaran", settings:"Tetapan", nextQuote:"Ayat / Quote Seterusnya",
     nextPrayer:"Solat seterusnya", yourLocation:"Lokasi anda", useLocation:"Guna lokasi saya",
     language:"Bahasa", textSize:"Saiz teks", savedLocation:"Lokasi waktu solat", change:"Tukar",
-    offline:"Mod Offline", notifications:"Notifikasi"
+    offline:"Mod Offline", notifications:"Notifikasi", darkMode:"Mod Gelap", darkDesc:"Paparan lebih selesa pada waktu malam."
   },
   EN: {
     home:"Home", categories:"Categories", categoriesShort:"Categories", prayerTimes:"Prayer Times",
@@ -257,7 +365,7 @@ const I18N = {
     favShort:"Favorites", settings:"Settings", nextQuote:"Next Verse / Quote",
     nextPrayer:"Next prayer", yourLocation:"Your location", useLocation:"Use my location",
     language:"Language", textSize:"Text size", savedLocation:"Prayer location", change:"Change",
-    offline:"Offline Mode", notifications:"Notifications"
+    offline:"Offline Mode", notifications:"Notifications", darkMode:"Dark Mode", darkDesc:"A more comfortable display at night."
   }
 };
 
@@ -267,6 +375,7 @@ let activeTheme = null;
 let currentQuoteId = Number(localStorage.getItem("rmCurrentQuote")) || 1;
 let favorites = new Set(JSON.parse(localStorage.getItem("rmFavorites") || "[]"));
 let textScale = Number(localStorage.getItem("reminderTextScale") || 1);
+let darkMode = localStorage.getItem("rmDarkMode") === "1";
 let tasbihTarget = Number(localStorage.getItem("tasbihTarget") || 33);
 let tasbihCount = Number(localStorage.getItem("tasbihCount") || 0);
 let prayerCache = JSON.parse(localStorage.getItem("prayerCacheV4") || "null");
@@ -281,6 +390,25 @@ function esc(v){
 function breaks(v){ return esc(v).replaceAll("\n","<br>"); }
 
 function tr(key){ return I18N[language][key] || key; }
+
+
+function applyTheme(){
+  document.documentElement.dataset.theme = darkMode ? "dark" : "light";
+  const meta = document.getElementById("themeColorMeta");
+  if(meta) meta.setAttribute("content", darkMode ? "#0f1713" : "#eef5f1");
+  const sw = document.getElementById("darkSwitch");
+  if(sw) sw.classList.toggle("on", darkMode);
+}
+function toggleDarkMode(){
+  darkMode = !darkMode;
+  localStorage.setItem("rmDarkMode", darkMode ? "1" : "0");
+  applyTheme();
+  toast(
+    darkMode
+      ? (language === "MS" ? "Mod gelap diaktifkan" : "Dark mode enabled")
+      : (language === "MS" ? "Mod gelap dimatikan" : "Dark mode disabled")
+  );
+}
 
 function applyLanguage(){
   document.documentElement.lang = language === "MS" ? "ms" : "en";
@@ -588,6 +716,7 @@ function updateSettings(){
   document.getElementById("settingsLocation").textContent=address;
   document.getElementById("prayerAddress").value=address;
   document.getElementById("settingsLang").textContent=language;
+  applyTheme();
 }
 
 /* Toast */
@@ -604,8 +733,19 @@ function registerServiceWorker(){
   }
 }
 
+function finishSplash(){
+  const splash=document.getElementById("appSplash");
+  if(!splash)return;
+  setTimeout(()=>{
+    splash.classList.add("hide");
+    setTimeout(()=>splash.remove(),450);
+  },420);
+}
+
 /* Start */
 function start(){
+
+  applyTheme();
   applyTextScale();
   applyLanguage();
   renderQuran();
@@ -615,6 +755,7 @@ function start(){
   renderPrayerListFromCache();
   updateMiniPrayer();
   registerServiceWorker();
+  finishSplash();
 
   if(!prayerCache && navigator.onLine) loadPrayerByLocation(true);
   countdownTimer=setInterval(updateCountdown,1000);
